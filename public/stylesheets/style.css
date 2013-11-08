@@ -1,0 +1,68 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+div.menu {
+  background-color: #7DCF7E;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 50px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  float: top;
+
+}
+
+div.cal {
+  float: right;
+  border-style: solid groove;
+  border: 2px;
+}
+
+button.btn {
+  border-style: none;
+  background-color: #147616;
+  color: rgb(220,220,240);
+  font: "Tahoma", Helvetica, sans-serif;
+}
+button.btn:hover {
+  background-color: #F47316;
+}
+
+.fade {
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
+
+.fade:hover {
+  opacity: 0.75;
+}
+
+.form-view-true {
+  opacity: 1;
+  position: inherit;
+  top: 0px;
+  left:0px;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+  visibility: visible;
+}
+
+.form-view-false {
+  position: inherit;
+  top: -400px;
+  left: 0px;
+  opacity: 0;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+  visibility: hidden;
+}
