@@ -1,0 +1,3 @@
+function TeamController($scope, $http) {
+	
+}

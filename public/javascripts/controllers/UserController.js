@@ -16,7 +16,7 @@ function UserController($scope, $http) {
 		loginVisible: true,
 		createVisible: false
 	}
-//@TODO - get this working with the DB!
+
 	$scope.login = function() { 
 		//alert($http);
 		$http.post('/user.json', $scope.pUser).success(function(data) {

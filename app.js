@@ -17,15 +17,11 @@ var db = Mongoose.createConnection('localhost', 'ExpTut');
 var app = express(); //this is an express app.
 
 //compile schemas here.
-var TodoSchema = require('./models/Todo.js').TodoSchema;
-var ProjectSchema = require('./models/Project.js').ProjectSchema;
-var UserSchema = require('./models/User.js').UserSchema;
-var TeamSchema = require('./models/Team.js').TeamSchema;
-var Todo = db.model('todos', TodoSchema);
-var Project = db.model('projects', ProjectSchema);
-var User = db.model('users', UserSchema);
-var Team = db.model('teams', TeamSchema);
-
+var Models = require('./models/Models'); //import schemas from Models.js
+var Todo = db.model('todos', Models.TodoSchema);
+var Project = db.model('projects', Models.ProjectSchema);
+var User = db.model('users', Models.UserSchema);
+var Team = db.model('teams', Models.TeamSchema);
 //end schema compiling.
 
 // all environments

@@ -1,0 +1,4 @@
+node_modules/*
+.bowerrc
+package.json
+public/javascripts/vendor/*
