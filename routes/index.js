@@ -7,7 +7,7 @@ exports.index = function() {
 	return function(req, res) {
 		res.render('index', {
 			title : 'Senior Project',
-			todos : {},
+			//todos : {},
 			projects : {},
 			teams : {}
 		});
@@ -22,9 +22,11 @@ exports.addTodo = function(Todo) {
 		todo.save(function(error, todo) {
 			if (error || !todo) {
 				res.json({ error : error});
+				alert("Error in addTodos!" + JSON.stringify(error));
 			}
 			else {
 				res.json({ todo : todo });
+				alert(todo);
 			}
 		});
 	};
@@ -33,7 +35,7 @@ exports.addTodo = function(Todo) {
 exports.getTodos = function(Todo) {
 	return function(req,res) {
 		Todo.find({}, function(error,todos) {
-			res.json({ todos : todos });
+			res.render({todos : todos});
 		});
 	}
 };
@@ -121,18 +123,14 @@ exports.createUser = function(User) {
 				user.verified = true;
 				user.save();
 			}
-			else {
+			else {f
 				//return an error
 				var emp = new User();
 				emp.userName = "NULL";
 				emp.password = "";
 				res.json({user : emp});
 			}
-		})
+		});
 	}
 }
 
-
-exports.user = function(req,res) {
-	res.send('Welcome to the profile of ' + req.params.user + '!');
-};

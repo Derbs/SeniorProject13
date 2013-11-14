@@ -41,10 +41,9 @@ block content
       br
       br
     br
-  div.container(ng-controller="TodoListController", ng-init="setTodos()")
+  div.container(ng-controller="TodoListController", ng-init="setTodos( #{JSON.stringify(todos)})")
     h1 Filler Title
     h2 Add New Task
-    p {{#{JSON.stringify(todos)}+ {todo}}}
     form(novalidate, ng-submit="addNewTodo()")
       textarea( ng-model="newTodo.description",
                 placeholder="Description")

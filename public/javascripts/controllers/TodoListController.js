@@ -11,9 +11,7 @@ function TodoListController($scope, $http) {
 	$scope.notDoneFilter = { done : false };
 
 	$scope.setTodos = function(todos) {
-	  $http.get('/todos.json').success(function(data) {
-	  	$scope.todos = data.todos;
-	  });
+		$scope.todos = JSON.stringify(todos);
 	};
 
 	$scope.update = function(todo) {
