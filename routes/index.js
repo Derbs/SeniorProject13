@@ -3,16 +3,18 @@
  * GET home page.
  */
 
-exports.index = function(Todo) {
+exports.index = function() {
 	return function(req, res) {
-		Todo.find({}, function(error, todos) {
-			res.render('index', {
-				title: 'Senior Project',
-				todos : todos
-			});
+		res.render('index', {
+			title : 'Senior Project',
+			todos : {},
+			projects : {},
+			teams : {}
 		});
 	};
 };
+
+
 
 exports.addTodo = function(Todo) {
 	return function(req,res) {
@@ -28,10 +30,30 @@ exports.addTodo = function(Todo) {
 	};
 };
 
-exports.get = function(Todo) {
+exports.getTodos = function(Todo) {
 	return function(req,res) {
 		Todo.find({}, function(error,todos) {
 			res.json({ todos : todos });
+		});
+	}
+};
+
+exports.getProjects = function(Project) {
+	return function(req,res) {
+		Project.find({}, function(error, projects) {
+			res.json({
+				projects : projects
+			});
+		});
+	}
+};
+
+exports.getTeams = function(Team) {
+	return function(req,res) {
+		Team.find({}, function(error, teams) {
+			res.json({
+				teams : teams
+			});
 		});
 	}
 };

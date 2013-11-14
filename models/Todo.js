@@ -5,7 +5,7 @@ exports.TodoSchema = new Mongoose.Schema({
 	updates : [{user : {type : String, default : "nobody"},
 				details : {type : String}
 				}],
-	teams : [{type : String}],
+	project : {type : String},
 	due : {type : Date, required : true },
 	done : {type : Boolean, default : false }
 });

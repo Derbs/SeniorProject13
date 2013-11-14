@@ -24,11 +24,27 @@ block content
         input(type="text", placeholder = "first name", ng-model="cUser.firstName")
         input(type="text", placeholder = "last name", ng-model="cUser.lastName")
         button.btn(type="submit") Register
-  div.team-details(ng-controller="TeamController", ng-init="getTeams()")
-    h2 Current Teams
-  div.container(ng-controller="TodoListController", ng-init="setTodos( #{JSON.stringify(todos)} )")
+  div.team-details(ng-controller="TeamController", ng-init="setTeams( #{JSON.stringify(teams)} )")
+    div.current-teams
+      h2 Current Teams
+      p lots of cool cool stuff
+      br
+      br
+    div.new-teams
+      h2 New Teams
+      form(novalidate, ng-submit="createTeam()")
+        input(type="text", placeholder = "Name", ng-model="nTeam.name")
+        br 
+        t Visible
+        input(type="checkbox", ng-model="nTeam.open")
+        button.btn(type="submit") Create
+      br
+      br
+    br
+  div.container(ng-controller="TodoListController", ng-init="setTodos()")
     h1 Filler Title
     h2 Add New Task
+    p {{#{JSON.stringify(todos)}+ {todo}}}
     form(novalidate, ng-submit="addNewTodo()")
       textarea( ng-model="newTodo.description",
                 placeholder="Description")

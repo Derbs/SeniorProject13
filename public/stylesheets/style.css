@@ -15,7 +15,6 @@ div.menu {
   padding-top: 25px;
   padding-bottom: 25px;
   float: top;
-
 }
 
 div.cal {
@@ -24,6 +23,12 @@ div.cal {
   border: 2px;
 }
 
+div.current-teams {
+  float: left;
+}
+div.new-teams {
+  float: right;
+}
 button.btn {
   border-style: none;
   background-color: #147616;
@@ -32,6 +37,10 @@ button.btn {
 }
 button.btn:hover {
   background-color: #F47316;
+}
+
+div.container {
+  clear:both;
 }
 
 .fade {

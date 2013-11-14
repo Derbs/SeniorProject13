@@ -43,9 +43,10 @@ if ('development' == app.get('env')) {
 }
 //--end express intializing stuff--
 
-app.get('/', routes.index(Todo));
-app.get('/users', user.list); //unrelated to todo list.
-app.get('/todos.json', routes.get(Todo));
+app.get('/', routes.index());
+app.get('/todos.json', routes.getTodos(Todo));
+app.get('/teams.json', routes.getTeams(Team));
+app.get('/projects.json', routes.getProjects(Project));
 app.put('/todo/:id.json', routes.update(Todo));
 
 app.post('/todo.json', routes.addTodo(Todo));
