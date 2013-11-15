@@ -34,8 +34,13 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+
+app.use(express.cookieParser());
+app.use(express.session({secret: '1234567890QWERTY'}));
+
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // development only
 if ('development' == app.get('env')) {
@@ -55,8 +60,6 @@ app.post('/todo.json', routes.addTodo(Todo));
 
 app.post('/user.json', routes.login(User));
 app.post('/crUser.json', routes.createUser(User));
-
-app.get('/users/:user', routes.user); // unrelated to todo list.
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

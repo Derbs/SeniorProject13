@@ -11,6 +11,14 @@ exports.index = function() {
 			projects : {},
 			teams : {}
 		});
+		if(!req.session.inst) {
+			req.session.user = {
+				firstName : "null",
+				lastName : "null",
+				userName : "null"
+			};
+			req.session.inst = true;
+		}
 	};
 };
 
@@ -80,7 +88,7 @@ exports.update = function(Todo) {
 		});
 	}
 };
-
+//@DO THIS
 exports.login = function(User) {
 	return function(req,res) {
 		var user = new User();
@@ -95,16 +103,31 @@ exports.login = function(User) {
 				var emp = new User();
 				emp.userName = "NULL";
 				emp.password = "";
-				res.json({user : emp});
 				console.log("Found nothing!" + emp.userName + emp.password);
 				res.json({user : emp});
 			}
 			else{
 				console.log("We found something!");
 				res.json({user : fUser});
+				req.session.user.userName = fUser.userName;
 			}
 		});
 	}
+}
+
+exports.createTeam = function(Team) {
+	return function(req,res) {
+		var team = new Team(); //
+		team.name = req.body.name;
+		team.open = req.body.open;
+		Team.findOne({'name' : req.body.name},
+			function(error, fTeam) {
+				if(error || !fTeam) {
+					console.log("new team with name " + fTeam.name);
+					team.save();
+				}
+			});
+	};
 }
 
 exports.createUser = function(User) {
@@ -123,7 +146,7 @@ exports.createUser = function(User) {
 				user.verified = true;
 				user.save();
 			}
-			else {f
+			else {
 				//return an error
 				var emp = new User();
 				emp.userName = "NULL";

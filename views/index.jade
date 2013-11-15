@@ -24,6 +24,8 @@ block content
         input(type="text", placeholder = "first name", ng-model="cUser.firstName")
         input(type="text", placeholder = "last name", ng-model="cUser.lastName")
         button.btn(type="submit") Register
+      br
+    br
   div.team-details(ng-controller="TeamController", ng-init="setTeams( #{JSON.stringify(teams)} )")
     div.current-teams
       h2 Current Teams
