@@ -37,9 +37,25 @@ function UserController($scope, $http) {
 	};
 	$scope.createUser = function() {
 		$http.post('/crUser.json', $scope.cUser).success(function(data) {
-			if(data.user.userName.valueOf() == STRING("NULL").valueOf()) {
-				console.log("stuff happened!");
+			console.log(data);
+			if(data.user.userName.valueOf() == String("NULL").valueOf()) {
+				console.log("no stuff happened!");
+				$scope.cUser.firstName = "";
+				$scope.cUser.lastName = "";
+				$scope.cUser.password = "";
+				$scope.cUser.email = "";
+				$scope.cUser.password = "";
+				$scope.site.message = "That user already exists";
 			}
-		})
+			else {
+				$scope.console.log("We have created a user");
+				$scope.cUser.firstName = "";
+				$scope.cUser.lastName = "";
+				$scope.cUser.password = "";
+				$scope.cUser.email = "";
+				$scope.cUser.userName = "";
+				$scope.site.message = "Account for " + data.user.userName + " successfully created!  Please Log in";
+			}
+		});
 	};
 }

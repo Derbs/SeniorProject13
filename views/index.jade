@@ -1,73 +1,72 @@
 extends layout
 block head
   //link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
-  link(rel='stylesheet', href='/public/stylesheets/style.css');
-  script(type='text/javascript', src='/javascripts/controllers/TodoListController.js')
-  script(type='text/javascript', src='/javascripts/controllers/UserController.js')
 block content
-  div.menu(class="fade" ng-controller="UserController", ng-model="site")
-    input(type="checkbox", ng-model="site.loginVisible")
-    input(type="checkbox", ng-model="site.createVisible")
-    br
-    p {{site.message}}
-    div(class="form-view-{{site.loginVisible}}")
-      form(novalidate, ng-submit="login()")
-        input(type="text", placeholder="user name", ng-model="pUser.userName")
-        input(type="password", placeholder="password", ng-model="pUser.password", id="password")
-        button.btn(type="submit") Login
-    div(class="form-view-{{site.createVisible}}")
-      form(novalidate, ng-submit="createUser()")
-        input(type="text", placeholder = "username", ng-model="cUser.userName")
-        input(type="password", placeholder = "password", ng-model="cUser.password")
-        input(type="text", placeholder = "e-mail", ng-model="cUser.email")
+  div(ng-controller="UserController", ng-model="site")
+    div(class="fade menu")
+      input(type="checkbox", ng-model="site.loginVisible")
+      input(type="checkbox", ng-model="site.createVisible")
+      br
+      p {{site.message}}
+      div(class="form-view-{{site.loginVisible}}")
+        form(novalidate, ng-submit="login()")
+          input(type="text", placeholder="user name", ng-model="pUser.userName")
+          input(type="password", placeholder="password", ng-model="pUser.password", id="password")
+          button.btn(type="submit") Login
+      div(class="form-view-{{site.createVisible}}")
+        form(novalidate, ng-submit="createUser()")
+          input(type="text", placeholder = "username", ng-model="cUser.userName")
+          input(type="password", placeholder = "password", ng-model="cUser.password")
+          input(type="text", placeholder = "e-mail", ng-model="cUser.email")
+          br
+          input(type="text", placeholder = "first name", ng-model="cUser.firstName")
+          input(type="text", placeholder = "last name", ng-model="cUser.lastName")
+          button.btn(type="submit") Register
         br
-        input(type="text", placeholder = "first name", ng-model="cUser.firstName")
-        input(type="text", placeholder = "last name", ng-model="cUser.lastName")
-        button.btn(type="submit") Register
       br
-    br
-  div.team-details(ng-controller="TeamController", ng-init="setTeams( #{JSON.stringify(teams)} )")
-    div.current-teams
-      h2 Current Teams
-      p lots of cool cool stuff
+    div.team-details(ng-controller="TeamController")
+      div.current-teams
+        h2 Current Teams
+        div.row.team(ng-repeat="team in teams")
+          | Trying to display Team: {{team.name}}
+        br
+        br
+      div.new-teams
+        h2 New Teams
+        form(novalidate, ng-submit="createTeam()")
+          input(type="text", placeholder = "name", ng-model="nTeam.name")
+          br 
+          t Visible
+          input(type="checkbox", ng-model="nTeam.open")
+          button.btn(type="submit") Create
+        br
+        br
       br
-      br
-    div.new-teams
-      h2 New Teams
-      form(novalidate, ng-submit="createTeam()")
-        input(type="text", placeholder = "Name", ng-model="nTeam.name")
-        br 
-        t Visible
-        input(type="checkbox", ng-model="nTeam.open")
-        button.btn(type="submit") Create
-      br
-      br
-    br
-  div.container(ng-controller="TodoListController", ng-init="setTodos( #{JSON.stringify(todos)})")
-    h1 Filler Title
-    h2 Add New Task
-    form(novalidate, ng-submit="addNewTodo()")
-      textarea( ng-model="newTodo.description",
-                placeholder="Description")
-      br
-      div.cal(ng-model="newTodo.due"): datepicker()
-      br
-      button.btn.btn-primary(type="submit") Add Todo
-    h2 Upcoming
-    div
-      div.row.todo.not-done(ng-repeat="todo in todos | filter:notDoneFilter")
-        div.span9
-          label.checkbox
-            input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
-            | {{todo.description}}
-        div.span3.text-right
-          i Due on {{todo.due | date:'MMM d, yyyy'}}
-    h2 Done
-    div
-      div.row.todo.done(ng-repeat="todo in todos | filter:doneFilter")
-        div.span9
-          label.checkbox
-            input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
-            del {{todo.description}}
-        div.span3.text-right
-          i {{todo.due | date: 'MMM d, yyyy'}}
+    div.container(ng-controller="TodoListController")
+      h1 Filler Title
+      h2 Add New Task
+      form(novalidate, ng-submit="addNewTodo()")
+        textarea( ng-model="newTodo.description",
+                  placeholder="Description")
+        br
+        div.cal(ng-model="newTodo.due"): datepicker()
+        br
+        button.btn.btn-primary(type="submit") Add Todo
+      h2 Upcoming
+      div
+        div.row.todo.not-done(ng-repeat="todo in todos | filter:notDoneFilter")
+          div.span9
+            label.checkbox
+              input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
+              | {{todo.description}}
+          div.span3.text-right
+            i Due on {{todo.due | date:'MMM d, yyyy'}}
+      h2 Done
+      div
+        div.row.todo.done(ng-repeat="todo in todos | filter:doneFilter")
+          div.span9
+            label.checkbox
+              input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
+              del {{todo.description}}
+          div.span3.text-right
+            i {{todo.due | date: 'MMM d, yyyy'}}

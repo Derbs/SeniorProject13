@@ -1,4 +1,4 @@
-
+'use strict'
 /*
  * GET home page.
  */
@@ -8,14 +8,13 @@ exports.index = function() {
 		res.render('index', {
 			title : 'Senior Project',
 			//todos : {},
-			projects : {},
-			teams : {}
 		});
 		if(!req.session.inst) {
 			req.session.user = {
 				firstName : "null",
 				lastName : "null",
-				userName : "null"
+				userName : "null",
+				email : "null"
 			};
 			req.session.inst = true;
 		}
@@ -58,11 +57,12 @@ exports.getProjects = function(Project) {
 	}
 };
 
-exports.getTeams = function(Team) {
+exports.updateTeams = function(Team) {
 	return function(req,res) {
-		Team.find({}, function(error, teams) {
+		Team.find({}, function(error, fTeams) {
+			console.log(JSON.stringify(fTeams));
 			res.json({
-				teams : teams
+				teams : fTeams
 			});
 		});
 	}
@@ -109,26 +109,48 @@ exports.login = function(User) {
 			else{
 				console.log("We found something!");
 				res.json({user : fUser});
+				//setting the user for the session
 				req.session.user.userName = fUser.userName;
+				req.session.user.firstName = fUser.firstName;
+				req.session.user.lastName = fUser.lastName;
+				req.session.user.email = fUser.email;
 			}
 		});
 	}
-}
+};
 
 exports.createTeam = function(Team) {
 	return function(req,res) {
+		console.log("Creating a team.");
 		var team = new Team(); //
 		team.name = req.body.name;
 		team.open = req.body.open;
-		Team.findOne({'name' : req.body.name},
+		//console.log(JSON.stringify(req.session));
+		console.log(req.session.user.userName + " is the current user!");
+		if(req.session.user.userName.valueOf() == String("null").valueOf) {
+			console.log("You must be logged in.  Please log in.");
+		}
+		else {
+			Team.findOne({'name' : req.body.name},
 			function(error, fTeam) {
 				if(error || !fTeam) {
-					console.log("new team with name " + fTeam.name);
+					team.lead.userName = req.session.user.userName;
+					console.log("new team with name " + team.name + 
+								" and leader " + team.lead.userName);
+					team.lead.email = req.session.user.email;
 					team.save();
+					res.json({team : fTeam});
+				}
+				else {
+					console.log("This team name already exists.");
+					team.name = "NULL";
+					team.open = false;
+					res.json({team : fTeam});
 				}
 			});
+		}
 	};
-}
+};
 
 exports.createUser = function(User) {
 	return function(req,res) {
@@ -138,6 +160,7 @@ exports.createUser = function(User) {
 		user.firstName = req.body.firstName;
 		user.lastName = req.body.lastName;
 		user.email = req.body.email;
+		var emp = new User();
 		User.findOne({'email' : req.body.email},
 		function(error,fUser) {
 			if(error || !fUser) { //if we don't find a user with that e-mail.
@@ -145,15 +168,16 @@ exports.createUser = function(User) {
 				console.log(user.userName);
 				user.verified = true;
 				user.save();
+				emp.userName = user.userName;
+				emp.password = "";
 			}
 			else {
 				//return an error
-				var emp = new User();
 				emp.userName = "NULL";
 				emp.password = "";
-				res.json({user : emp});
 			}
+			res.json({user : emp});
 		});
 	}
-}
+};
 

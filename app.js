@@ -5,7 +5,6 @@
 
 var express = require('express');
 var routes = require('./routes/index');
-var user = require('./routes/user'); //this isn't used for the program.
 var http = require('http');
 var path = require('path');
 var Mongoose = require('mongoose');
@@ -15,6 +14,9 @@ var Mongoose = require('mongoose');
 var db = Mongoose.createConnection('localhost', 'ExpTut'); 
 
 var app = express(); //this is an express app.
+
+app.use(express.cookieParser());
+app.use(express.session({secret: '1234567890QWERTY'}));
 
 //compile schemas here.
 var Models = require('./models/Models'); //import schemas from Models.js
@@ -35,9 +37,6 @@ app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
-app.use(express.cookieParser());
-app.use(express.session({secret: '1234567890QWERTY'}));
-
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -52,11 +51,11 @@ app.set('todos', routes.getTodos(Todo));
 
 app.get('/', routes.index());
 app.get('/todos.json', routes.getTodos(Todo));
-app.get('teams', routes.getTeams(Team));
-app.get('projects', routes.getProjects(Project));
 app.put('/todo/:id.json', routes.update(Todo));
-
+app.post('/createTeam.json', routes.createTeam(Team));
 app.post('/todo.json', routes.addTodo(Todo));
+
+app.get('/teams.json',routes.updateTeams(Team));
 
 app.post('/user.json', routes.login(User));
 app.post('/crUser.json', routes.createUser(User));

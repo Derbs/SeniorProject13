@@ -1,13 +1,16 @@
 doctype 5
-html(ng-app="TodoModule")
+html(ng-app="TaskModule")
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
     
     script(type='text/javascript', src='/javascripts/vendor/angular/angular.js')
     script(type='text/javascript', src='/javascripts/vendor/angular-bootstrap/ui-bootstrap-tpls.js')
-    script(type='text/javascript', src='/javascripts/TodoModule.js')
-
+    //modules
+    script(type='text/javascript', src='/javascripts/TaskModule.js')
+    sript(type='text/javascript', src='/javascripts/controllers/TodoListController.js')
+    script(type='text/javascript', src='/javascripts/controllers/UserController.js')
+    script(type='text/javascript', src='/javascripts/controllers/TeamController.js');
     block head
 
   body

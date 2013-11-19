@@ -1,8 +1,10 @@
 function TeamController($scope, $http) {
+	console.log("We have a team controller!");
 	$scope.teams = [];
 	$scope.nTeam = {
-		name : "name",
-		open : true
+		name : "",
+		open : true,
+		members : []
 	};
 
 	//this may not work.... if pulling data happens at the start, then
@@ -12,9 +14,19 @@ function TeamController($scope, $http) {
 		$scope.teams = JSON.stringify(teams);
 	};
 
-	$scope.createTeam = function() {
-		$http.post('/team.json', $scope.nTeam).success(function(data) {
-			
+	$scope.updateTeams = function(Team) {
+		$http.get('/teams.json').success(function(data) {
+			$scope.teams = data.teams;
 		});
 	};
+
+	$scope.createTeam = function() {
+		$http.post('/createTeam.json', $scope.nTeam).success(function(data) {
+			$scope.teams.push(data.team.name);
+			console.log(JSON.stringify($scope.teams));
+			console.log(JSON.stringify(data.team));
+			$scope.nTeam.name = "";
+		});
+	};
+
 }
