@@ -5,10 +5,6 @@
 
 exports.index = function() {
 	return function(req, res) {
-		res.render('index', {
-			title : 'Senior Project',
-			//todos : {},
-		});
 		if(!req.session.inst) {
 			req.session.user = {
 				firstName : "null",
@@ -16,8 +12,15 @@ exports.index = function() {
 				userName : "null",
 				email : "null"
 			};
+			console.log("Session is NOW initialized.");
 			req.session.inst = true;
 		}
+		//res.set({user : req.session.user});
+		res.render('index', {
+			title : 'Senior Project',
+			siteUser : req.session.user
+		});
+		console.log("Loaded the application as user " + req.session.user.userName + ".");
 	};
 };
 
@@ -61,10 +64,11 @@ exports.updateTeams = function(Team) {
 	return function(req,res) {
 		Team.find({}, function(error, fTeams) {
 			console.log(JSON.stringify(fTeams));
-			res.json({
-				teams : fTeams
-			});
+			
 		});
+		Team.find({})
+
+		res.json({teams : fTeams});
 	}
 };
 
@@ -89,13 +93,12 @@ exports.update = function(Todo) {
 	}
 };
 //@DO THIS
-exports.login = function(User) {
+exports.login = function(User,Team) {
 	return function(req,res) {
 		var user = new User();
 		user.userName = req.body.userName;
 		user.password = req.body.password;
-		console.log("This happened!");
-		console.log("Displaying the user:" + JSON.stringify(user));
+		console.log("Attempting to log in user with username \"" + user.userName + "\".");
 		User.findOne({ 'userName' : req.body.userName, 
 					   'password' : req.body.password },
 		function(error,fUser) {
@@ -103,17 +106,21 @@ exports.login = function(User) {
 				var emp = new User();
 				emp.userName = "NULL";
 				emp.password = "";
-				console.log("Found nothing!" + emp.userName + emp.password);
+				console.log("No user with that name found.");
 				res.json({user : emp});
 			}
 			else{
-				console.log("We found something!");
+				console.log("We found user with name " + fUser.userName);
 				res.json({user : fUser});
 				//setting the user for the session
 				req.session.user.userName = fUser.userName;
 				req.session.user.firstName = fUser.firstName;
 				req.session.user.lastName = fUser.lastName;
 				req.session.user.email = fUser.email;
+				Team.find({}, function(error, fTeams) {
+					console.log(JSON.stringify(fTeams));
+					res.json({teams : fTeams});
+				});
 			}
 		});
 	}
@@ -125,28 +132,30 @@ exports.createTeam = function(Team) {
 		var team = new Team(); //
 		team.name = req.body.name;
 		team.open = req.body.open;
-		//console.log(JSON.stringify(req.session));
-		console.log(req.session.user.userName + " is the current user!");
-		if(req.session.user.userName.valueOf() == String("null").valueOf) {
-			console.log("You must be logged in.  Please log in.");
+		console.log(req.session.user.userName);
+		if(req.session.user.userName.valueOf()==String("null").valueOf()){
+			console.log("No user is logged in - cannot create a team.");
+			team.name = "null";
+			res.json({team : team});
 		}
 		else {
+			console.log(req.session.user.userName + " is a current user who is trying to create a team!");
+			console.log(req.body.name);
 			Team.findOne({'name' : req.body.name},
 			function(error, fTeam) {
 				if(error || !fTeam) {
-					team.lead.userName = req.session.user.userName;
+					team.leadName = req.session.user.userName;
+					team.leadContact = req.session.user.email;
 					console.log("new team with name " + team.name + 
-								" and leader " + team.lead.userName);
-					team.lead.email = req.session.user.email;
+								" and leader " + team.leadName + " is created!");
 					team.save();
-					res.json({team : fTeam});
 				}
 				else {
 					console.log("This team name already exists.");
-					team.name = "NULL";
+					team.name = "null";
 					team.open = false;
-					res.json({team : fTeam});
 				}
+				res.json({team : team});
 			});
 		}
 	};
@@ -165,7 +174,7 @@ exports.createUser = function(User) {
 		function(error,fUser) {
 			if(error || !fUser) { //if we don't find a user with that e-mail.
 				//then create the new user.
-				console.log(user.userName);
+				console.log("Creating a new user with username \"" + user.userName + "\".");
 				user.verified = true;
 				user.save();
 				emp.userName = user.userName;

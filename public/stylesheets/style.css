@@ -23,10 +23,16 @@ div.cal {
   border: 2px;
 }
 
+
 div.current-teams {
   float: left;
 }
 div.new-teams {
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+}
+div.existing-teams {
   float: right;
 }
 button.btn {

@@ -57,7 +57,7 @@ app.post('/todo.json', routes.addTodo(Todo));
 
 app.get('/teams.json',routes.updateTeams(Team));
 
-app.post('/user.json', routes.login(User));
+app.post('/user.json', routes.login(User,Team));
 app.post('/crUser.json', routes.createUser(User));
 
 http.createServer(app).listen(app.get('port'), function(){

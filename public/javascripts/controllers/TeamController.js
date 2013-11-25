@@ -7,13 +7,6 @@ function TeamController($scope, $http) {
 		members : []
 	};
 
-	//this may not work.... if pulling data happens at the start, then
-	// how can I manage this when the index request really doesn't like 
-	// to call multiple functions?  We'll find out.........
-	$scope.setTeams = function(teams) {
-		$scope.teams = JSON.stringify(teams);
-	};
-
 	$scope.updateTeams = function(Team) {
 		$http.get('/teams.json').success(function(data) {
 			$scope.teams = data.teams;
@@ -21,12 +14,17 @@ function TeamController($scope, $http) {
 	};
 
 	$scope.createTeam = function() {
+		$scope.site.message = "Trying to create a team....";
 		$http.post('/createTeam.json', $scope.nTeam).success(function(data) {
-			$scope.teams.push(data.team.name);
-			console.log(JSON.stringify($scope.teams));
-			console.log(JSON.stringify(data.team));
+			if(data.team.name.valueOf()==String("null").valueOf()) {
+				$scope.site.message = "That team cannot be created.  Either it already exists, or it's an illegal name.";
+			}
+			else {
+				$scope.teams.push(JSON.stringify(data.team.name));
+				$scope.site.message = "You just created a team with name " + data.team.name;
+				$scope.updateTeams();
+			}
 			$scope.nTeam.name = "";
 		});
 	};
-
 }
