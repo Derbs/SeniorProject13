@@ -15,6 +15,9 @@ var db = Mongoose.createConnection('localhost', 'ExpTut');
 
 var app = express(); //this is an express app.
 
+
+//allow express and node to use cookies.  useful for sessions, user and
+//team continuity across page refreshes.
 app.use(express.cookieParser());
 app.use(express.session({secret: '1234567890QWERTY'}));
 
@@ -55,10 +58,12 @@ app.put('/todo/:id.json', routes.update(Todo));
 app.post('/createTeam.json', routes.createTeam(Team));
 app.post('/todo.json', routes.addTodo(Todo));
 
-app.get('/teams.json',routes.updateTeams(Team));
-
+app.get('/teams.json',routes.updateTeamsByMembership(Team));
+app.get('/publicteams.json',routes.updatePublicTeams(Team));
 app.post('/user.json', routes.login(User,Team));
 app.post('/crUser.json', routes.createUser(User));
+app.post('/createProject.json', routes.createProject(Team, Project));
+app.get('/session',routes.session());
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

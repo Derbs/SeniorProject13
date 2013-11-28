@@ -2,17 +2,16 @@ extends layout
 block head
   //link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
 block content
-  div(ng-controller="UserController", ng-model="site")
+  div(ng-controller="UserController", ng-cloak, ng-model="site",data-ng-init="checkSession()")
     div(class="fade menu")
       br
       p {{site.message}}
-      if("{{site.loginAttempts}} < 2")
+      div(ng-hide="site.loggedIn")
         div(class="form-view-{{site.loginVisible}}")
           form(novalidate, ng-submit="login()")
             input(type="text", placeholder="user name", ng-model="pUser.userName")
             input(type="password", placeholder="password", ng-model="pUser.password", id="password")
             button.btn(type="submit") Login
-      else
         div(class="form-view-{{site.createVisible}}")
           form(novalidate, ng-submit="createUser()")
             input(type="text", placeholder = "username", ng-model="cUser.userName")
@@ -24,23 +23,41 @@ block content
             button.btn(type="submit") Register
           br
         br
-    div.team-details(ng-controller="TeamController")
+    div.team-details(ng-controller="TeamController", data-ng-init="updateTeams(Team)")
       div.current-teams
-        h2 Joined Teams
-        div.row.team(ng-repeat="team in teams")
-          | Trying to display Team: {{team.name}}
+        h2 Your Teams
+        select(ng-model="activeTeam", ng-options="team.name for team in teams")
+          br
         br
-        br
+        div.activeTeam(ng-model="activeTeam")
+          h3 Current Team
+          t Name: {{activeTeam.name}}
+          br
+          t Open: {{activeTeam.open}}
+          br
+          t Members:
+          div(ng-repeat="person in activeTeam.members") 
+            t {{person}}
+          t Projects:
+          div(ng-repeat="project in activeTeam.projects")
+            t {{project}}
+          form(novalidate,ng-submit="addProject()")
+            input(type="text",placeholder="project name", ng-model="nProject.name")
+            br
+            input(type="textarea",placeholder="just another project description", ng-model="nProject.description")
+            button.btn(type="submit") Create Project
       div.existing-teams
         h2 Public Teams
-        div.row.team(ng-repeat="team in teams")
-          | {{publicTeam.name}}
+        select
+          option(ng-repeat="publicTeam in publicTeams", value = "{{publicTeam.name}}")
+            {{publicTeam.name}}
         br
         br
       div.new-teams
         h2 New Team
         form(novalidate, ng-submit="createTeam()")
           input(type="text", placeholder = "name", ng-model="nTeam.name")
+          input(type="text",placeholder = "member cap", ng-model="nTeam.memberCap")
           br
           t Visible
           input(type="checkbox", ng-model="nTeam.open")

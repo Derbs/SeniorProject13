@@ -18,18 +18,37 @@ function UserController($scope, $http) {
 		lastName: "",
 		email: "",
 		password: ""
-	}
+	};
 	$scope.site = {
-		message: "Please Log in!" + JSON.stringify($http),
+		message: "",
 		loginAttempts: 0,
 		createUserEnabled: false,
-		notLoggedIn: true
-	}
+		loggedIn: false
+	};
 
+
+
+
+	$scope.checkSession = function() {
+		$http.get('/session').success(function (data) {
+			if(data.user.userName.valueOf() == String("null").valueOf()) {
+				//do nothing
+				$scope.site.message = "Please Log in!";
+			}
+			else {
+				$scope.site.message = "Welcome back, " + data.user.firstName;
+				$scope.site.loggedIn = true;
+				$scope.currentUser.userName = data.user.userName;
+				$scope.currentUser.firstName = data.user.firstName;
+				$scope.currentUser.lastName = data.user.lastName;
+				$scope.currentUser.email = data.user.email;
+			}
+		});
+	};
 
 	$scope.login = function() {
 		$http.post('/user.json', $scope.pUser).success(function(data) {
-			if(data.user.userName.valueOf() == String("NULL").valueOf()) {
+			if(data.user.userName.valueOf() == String("null").valueOf()) {
 				$scope.site.message = "That user does not exist...";
 				$scope.pUser.userName = "";
 				$scope.pUser.password = data.user.password;
@@ -41,7 +60,6 @@ function UserController($scope, $http) {
 								+ $scope.site.createUserEnabled;
 			}
 			else {
-				console.log("We have found " + JSON.stringify(data.user));
 				$scope.pUser.firstName = data.user.firstName;
 				$scope.pUser.lastName = data.user.lastName;
 				$scope.pUser.password = "";
@@ -49,6 +67,7 @@ function UserController($scope, $http) {
 				$scope.currentUser.firstName = data.user.firstName;
 				$scope.currentUser.lastName = data.user.lastName;
 				$scope.site.message = "Welcome " + $scope.currentUser.firstName + "!";
+				$scope.site.loggedIn = true;
 			}
 			
 		});

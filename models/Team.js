@@ -5,6 +5,7 @@ exports.TeamSchema = new Mongoose.Schema({
 	open : {type : Boolean, default: true},
 	leadName : {type : String, required: true},
 	leadContact : {type : String, required: true},
+	memberCap : {type : Number, default: 5, required: true},
 	members : [{type : String}],
 	projects : [{type : String}]
 });
