@@ -16,7 +16,7 @@ exports.createProject = function(Team,Project) {
 					console.log("We can create the project.");
 					project.save();
 					res.json({project : project});
-					console.log("\n\n Project Created!")
+					console.log("\n\nProject Created!")
 				}
 				else {
 					console.log("We found something too similar to this project.")
@@ -32,8 +32,10 @@ exports.createProject = function(Team,Project) {
 					"for project with name " + project.name +"...");
 			}
 			else {
+				console.log("Now we're updating the team.\n\n");
 				fTeam.projects.addToSet(project.name);
 				console.log(JSON.stringify(fTeam.projects));
+				console.log(JSON.stringify(fTeam));
 				fTeam.save();
 				res.json({changedTeam:fTeam});
 			}

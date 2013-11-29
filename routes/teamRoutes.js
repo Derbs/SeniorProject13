@@ -100,8 +100,19 @@ exports.leaveTeam = function(Team) {
 				console.log("Can't leave a team if you're a no body!  Log in.");
 			}
 			else {
-				fTeam.members.pop(req.session.user.userName);
-				fTeam.save();
+				console.log("The current members are " + fTeam.members);
+				fTeam.members.splice(fTeam.members.indexOf(req.session.user.userName),
+									 fTeam.members.indexOf(req.session.user.userName));
+				res.json({removedTeamName : fTeam.name});
+				console.log("After delettion, the current members are " + fTeam.members);
+				if(fTeam.members.length==0) {
+					fTeam.remove();
+					console.log("As the team is empty, it has been deleted.");
+				}
+				else {
+					console.log("There is one less member in the team.");
+					fTeam.save();
+				}
 				console.log("Successfully left team.");
 			}
 		})

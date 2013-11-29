@@ -46,19 +46,12 @@ block content
                 button.btn(ng-click="site.viewTeamDetails=!site.viewTeamDetails") Details
                 div(collapse="site.viewTeamDetails")
                   div.span2
-                    t Name: {{activeTeam.name}}
-                    button.btn-mini(class="label-success",type="button", btn-checkbox, ng-model="activeTeam.open") Open
+                    button.btn-mini(class="btn-success",type="button", btn-checkbox, ng-model="activeTeam.open") Open
                   div.span2 Members:
-                    div(ng-repeat="person in activeTeam.members") 
-                      t {{person}}
-                  t Projects:
-                  div(ng-repeat="project in activeTeam.projects")
-                    t {{project}}
-                  form(novalidate,ng-submit="addProject()")
-                    input(type="text",placeholder="project name", ng-model="nProject.name")
-                    br
-                    textarea(placeholder="just another project description", ng-model="nProject.description")
-                    button.btn(type="submit") Create Project
+                    ul(ng-repeat="person in activeTeam.members") 
+                      li {{person}}
+                  div.span4
+                    button.btn(class="btn-warning",type="button",ng-click="leaveTeam()") Leave Team
             tab(heading="Public Teams") 
               select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in publicTeams")
               button.btn(ng-click="joinTeam()") Join
@@ -68,5 +61,14 @@ block content
                 input(type="text",placeholder = "member cap", ng-model="nTeam.memberCap")
                 button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
                 button.btn(type="submit") Create
+      div(collapse="site.viewingProjects")
+        div.well
+          ul(ng-repeat="project in activeTeam.projects")
+            li {{project}}
+          form(novalidate,ng-submit="addProject()")
+            input(type="text",placeholder="project name", ng-model="nProject.name")
+            textarea(placeholder="just another project description", ng-model="nProject.description")
+            button.btn(type="submit") Create Project
+      div(collapse="site.viewingTasks")
     div.span7
       h1 The Canvas Goes here.            

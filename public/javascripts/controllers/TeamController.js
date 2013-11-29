@@ -39,10 +39,6 @@ function TeamController($scope, $http) {
 		});
 	};
 
-	/*$scope.updateActiveTeam = function() {
-		$scope.activeTeam.name = teamName;
-		$scope.
-	};*/
 
 	$scope.addProject = function() {
 		$scope.nProject.people = [];
@@ -53,7 +49,10 @@ function TeamController($scope, $http) {
 				$scope.site.message = "That project was not created.  Something went wrong.";
 			}
 			else {
-				$scope.updateTeams();
+				var index = $scope.findTeam(data.changedTeam.name);
+				$scope.site.message("We found this index " + index);
+				$scope.teams.splice(index,index);
+				$scope.teams.push(data.changedTeam);
 			}
 		});
 	};
@@ -72,7 +71,21 @@ function TeamController($scope, $http) {
 
 	$scope.leaveTeam = function() {
 		$http.post('/leaveTeam.json',$scope.activeTeam).success(function(data) {
-			$scope.teams.pop($scope.teams.indexOf($scope.activeTeam.name));
+			$scope.findTeam(data.removedTeamName);
+			$scope.site.message = "You left " + data.removedTeamName + ".";
+			$scope.teams.splice(indexOfRemovedTeam,indexOfRemovedTeam);
+			$scope.activeTeam = $scope.teams[0];
 		});
-	}
+	};
+
+	$scope.findTeam = function(teamName) {
+		var indexOfTeam = -1;
+		for(var index = 0; index<$scope.teams.length; index++) {
+			if($scope.teams[index].name.valueOf()==teamName.valueOf()) {
+				indexOfTeam = index;
+				break;
+			}
+			return indexOfTeam;
+		}
+	};
 }
