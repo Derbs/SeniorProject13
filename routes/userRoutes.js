@@ -22,12 +22,12 @@ exports.login = function(User,Team) {
 				req.session.user.firstName = fUser.firstName;
 				req.session.user.lastName = fUser.lastName;
 				req.session.user.email = fUser.email;
-				Team.find({ $or:[ {leadName : req.session.user.userName},
+			/*	Team.find({ $or:[ {leadName : req.session.user.userName},
 					   	 {members : req.session.user.userName} ] },
 				function(error,fTeams) {
 					console.log("\n\nMember Teams\n" + JSON.stringify(fTeams));
 					res.json({teams : fTeams});
-				});
+				});*/
 			}
 		});
 	}
@@ -45,7 +45,7 @@ exports.createUser = function(User) {
 		user.lastName = req.body.lastName;
 		user.email = req.body.email;
 		var emp = new User();
-		User.findOne({'email' : req.body.email, 'userName' : req.body.userName},
+		User.findOne({$or:[{email : req.body.email},{userName : req.body.userName}]},
 		function(error,fUser) {
 			if(error || !fUser) { //if we don't find a user with that e-mail.
 				//then create the new user.
@@ -56,6 +56,8 @@ exports.createUser = function(User) {
 				emp.password = "";
 			}
 			else {
+				console.log("Could not create a user with username " + user.userName + 
+					".\nThat user probably already exists.");
 				//return an error
 				emp.userName = "null";
 				emp.password = "";

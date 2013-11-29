@@ -1,4 +1,6 @@
 node_modules/*
 .bowerrc
 package.json
+public/javascripts/vendor/angular/*
+public/javascripts/vendor/angular-scenario/*
 public/javascripts/vendor/*

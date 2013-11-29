@@ -11,8 +11,9 @@ exports.createTeam = function(Team) {
 			team.name = "null";
 			res.json({team : team});
 		}
-		else if(team.name.length==0 || team.name.valueOf()==String("null").valueOf()) {
-			console.log("Team name cannot be null.");
+		else if(team.name.length==0 || team.name.valueOf()==String("null").valueOf()||
+				team.memberCap == null) {
+			console.log("Team name or member cap cannot be null.");
 			team.name = "null";
 			res.json({team : team});
 		}
@@ -59,6 +60,52 @@ exports.updateTeamsByMembership = function(Team) {
 			res.json({teams : fTeams});
 		});
 	}
+};
+
+exports.joinTeam = function(Team) {
+	return function(req,res) {
+		console.log("Attempting to join a team with name " + req.body.name);
+		var team = new Team();
+		team.name = "null";
+		Team.findOne({name : req.body.name}, function(error,fTeam) {
+			console.log("Found this team:" + JSON.stringify(fTeam));
+			if(error||!fTeam) {
+				console.log("The team with name " + req.body.name + " does not exist.");
+				res.json({changedTeam : team});
+			}
+			else if(fTeam.members.indexOf(req.session.user.userName)!=-1||
+					fTeam.leadName.valueOf()==req.session.user.userName.valueOf()) { 
+				console.log("The user " + req.session.user.userName + " is already a member of this team.");
+				res.json({changedTeam : team});
+			}
+			else {
+				fTeam.members.push(req.session.user.userName);
+				console.log("The user " + req.session.user.userName + " has joined the team.");
+				fTeam.save();
+				res.json({changedTeam : fTeam});
+			}
+		});
+	}
+};
+
+exports.leaveTeam = function(Team) {
+	return function(req,res) {
+		console.log("Attemption to leave a team with name " + req.body.name);
+		Team.findOne({name : req.body.name},function(error,fTeam) {
+			console.log("Found this team:" + JSON.stringify(fTeam));
+			if(error||!fTeam) {
+				console.log("The team with name " + req.body.name + " doesn't seem to exist.");
+			}
+			else if(req.session.user.userName.valueOf()==String("null").valueOf()) {
+				console.log("Can't leave a team if you're a no body!  Log in.");
+			}
+			else {
+				fTeam.members.pop(req.session.user.userName);
+				fTeam.save();
+				console.log("Successfully left team.");
+			}
+		})
+	};
 };
 
 /*exports.findTeam = function(Team) {

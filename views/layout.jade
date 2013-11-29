@@ -2,10 +2,11 @@ doctype 5
 html(ng-app="TaskModule")
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    
+    script(type='text/javascript', src = '/javascripts/vendor/jquery/jquery.js')
     script(type='text/javascript', src='/javascripts/vendor/angular/angular.js')
     script(type='text/javascript', src='/javascripts/vendor/angular-bootstrap/ui-bootstrap-tpls.js')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel = 'stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap-responsive.css' )
     //modules
     script(type='text/javascript', src='/javascripts/TaskModule.js')
     sript(type='text/javascript', src='/javascripts/controllers/TodoListController.js')
@@ -14,4 +15,5 @@ html(ng-app="TaskModule")
     block head
 
   body
-    block content
+    div.container-fluid(ng-controller="UserController")
+      block content

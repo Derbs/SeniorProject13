@@ -5,6 +5,7 @@
 
 var userRoutes = require('./userRoutes');
 var teamRoutes = require('./teamRoutes');
+var projectRoutes = require('./projectRoutes');
 
 exports.login = userRoutes.login;
 exports.createUser = userRoutes.createUser;
@@ -13,6 +14,8 @@ exports.session = userRoutes.session;
 exports.createTeam = teamRoutes.createTeam;
 exports.updatePublicTeams = teamRoutes.updatePublicTeams;
 exports.updateTeamsByMembership = teamRoutes.updateTeamsByMembership;
+exports.joinTeam = teamRoutes.joinTeam;
+exports.leaveTeam = teamRoutes.leaveTeam;
 
 exports.createProject = projectRoutes.createProject;
 

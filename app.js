@@ -64,6 +64,8 @@ app.post('/user.json', routes.login(User,Team));
 app.post('/crUser.json', routes.createUser(User));
 app.post('/createProject.json', routes.createProject(Team, Project));
 app.get('/session',routes.session());
+app.post('/joinTeam.json', routes.joinTeam(Team));
+app.post('/leaveTeam.json', routes.leaveTeam(Team));
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

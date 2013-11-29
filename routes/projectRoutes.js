@@ -35,6 +35,7 @@ exports.createProject = function(Team,Project) {
 				fTeam.projects.addToSet(project.name);
 				console.log(JSON.stringify(fTeam.projects));
 				fTeam.save();
+				res.json({changedTeam:fTeam});
 			}
 		})
 	}

@@ -1,95 +1,72 @@
 extends layout
 block head
-  //link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
+  link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
 block content
-  div(ng-controller="UserController", ng-cloak, ng-model="site",data-ng-init="checkSession()")
-    div(class="fade menu")
-      br
-      p {{site.message}}
-      div(ng-hide="site.loggedIn")
-        div(class="form-view-{{site.loginVisible}}")
-          form(novalidate, ng-submit="login()")
-            input(type="text", placeholder="user name", ng-model="pUser.userName")
-            input(type="password", placeholder="password", ng-model="pUser.password", id="password")
-            button.btn(type="submit") Login
-        div(class="form-view-{{site.createVisible}}")
-          form(novalidate, ng-submit="createUser()")
-            input(type="text", placeholder = "username", ng-model="cUser.userName")
-            input(type="password", placeholder = "password", ng-model="cUser.password")
-            input(type="text", placeholder = "e-mail", ng-model="cUser.email")
-            br
-            input(type="text", placeholder = "first name", ng-model="cUser.firstName")
-            input(type="text", placeholder = "last name", ng-model="cUser.lastName")
-            button.btn(type="submit") Register
+  div.navbar
+    div.navbar-inner
+      a.brand(href="#") Seeing The Forest
+      ul.nav
+        li
+          a.disabled(href= "#", ng-click="toggleLogin()") Login
+        li
+          a.disabled(href="#", ng-click="toggleRegister()") Register
+        li 
+        li.divider-vertical
+        li.pull-right
+          a.disabled(href="#" class = "pull-right") {{site.message}}
+  div(collapse = "site.isLoginCollapsed")
+    div(class = "well")
+      form(novalidate, ng-submit="login()")
+        input(type="text", placeholder="user name", ng-model="pUser.userName")
+        input(type="password", placeholder="password", ng-model="pUser.password", id="password")
+        button.btn(type="submit") Login
+  div(collapse = "site.isRegisterCollapsed")
+    div(class = "well")
+      div(class="form-view-{{site.createVisible}}")
+        form(novalidate, ng-submit="createUser()")
+          input(type="text", placeholder = "username", ng-model="cUser.userName")
+          input(type="password", placeholder = "password", ng-model="cUser.password")
+          input(type="text", placeholder = "e-mail", ng-model="cUser.email")
           br
-        br
-    div.team-details(ng-controller="TeamController", data-ng-init="updateTeams(Team)")
-      div.current-teams
-        h2 Your Teams
-        select(ng-model="activeTeam", ng-options="team.name for team in teams")
-          br
-        br
-        div.activeTeam(ng-model="activeTeam")
-          h3 Current Team
-          t Name: {{activeTeam.name}}
-          br
-          t Open: {{activeTeam.open}}
-          br
-          t Members:
-          div(ng-repeat="person in activeTeam.members") 
-            t {{person}}
-          t Projects:
-          div(ng-repeat="project in activeTeam.projects")
-            t {{project}}
-          form(novalidate,ng-submit="addProject()")
-            input(type="text",placeholder="project name", ng-model="nProject.name")
-            br
-            input(type="textarea",placeholder="just another project description", ng-model="nProject.description")
-            button.btn(type="submit") Create Project
-      div.existing-teams
-        h2 Public Teams
-        select
-          option(ng-repeat="publicTeam in publicTeams", value = "{{publicTeam.name}}")
-            {{publicTeam.name}}
-        br
-        br
-      div.new-teams
-        h2 New Team
-        form(novalidate, ng-submit="createTeam()")
-          input(type="text", placeholder = "name", ng-model="nTeam.name")
-          input(type="text",placeholder = "member cap", ng-model="nTeam.memberCap")
-          br
-          t Visible
-          input(type="checkbox", ng-model="nTeam.open")
-          button.btn(type="submit") Create
-        br
-        br
-      br
-    div.container(ng-controller="TodoListController")
-      h1 Filler Title
-      h2 Add New Task
-      form(novalidate, ng-submit="addNewTodo()")
-        textarea( ng-model="newTodo.description",
-                  placeholder="Description")
-        br
-        div.cal(ng-model="newTodo.due"): datepicker()
-        br
-        button.btn.btn-primary(type="submit") Add Todo
-      h2 Upcoming
-      div
-        div.row.todo.not-done(ng-repeat="todo in todos | filter:notDoneFilter")
-          div.span9
-            label.checkbox
-              input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
-              | {{todo.description}}
-          div.span3.text-right
-            i Due on {{todo.due | date:'MMM d, yyyy'}}
-      h2 Done
-      div
-        div.row.todo.done(ng-repeat="todo in todos | filter:doneFilter")
-          div.span9
-            label.checkbox
-              input(type="checkbox", ng-model="todo.done", ng-change="update(todo)")
-              del {{todo.description}}
-          div.span3.text-right
-            i {{todo.due | date: 'MMM d, yyyy'}}
+          input(type="text", placeholder = "first name", ng-model="cUser.firstName")
+          input(type="text", placeholder = "last name", ng-model="cUser.lastName")
+          button.btn(type="submit") Register
+  div(ng-controller = "TeamController", data-ng-init="updateTeams()", ng-cloak, data-ng-init="checkSession()")
+    div.span5(id="team-viewing-holder")
+      div.btn-group
+        button.btn(ng-click="site.viewingTeams=!site.viewingTeams") Teams
+        button.btn(ng-click="site.viewingProjects=!site.viewingProjects") Projects
+        button.btn(ng-click="site.viewingTasks=!site.viewingTasks") Tasks
+      div(collapse="site.viewingTeams")
+        div.well
+          tabset
+            tab(heading="Your Teams")
+              div.span4
+                select(ng-model="activeTeam", ng-options="team.name for team in teams")
+                button.btn(ng-click="site.viewTeamDetails=!site.viewTeamDetails") Details
+                div(collapse="site.viewTeamDetails")
+                  div.span2
+                    t Name: {{activeTeam.name}}
+                    button.btn-mini(class="label-success",type="button", btn-checkbox, ng-model="activeTeam.open") Open
+                  div.span2 Members:
+                    div(ng-repeat="person in activeTeam.members") 
+                      t {{person}}
+                  t Projects:
+                  div(ng-repeat="project in activeTeam.projects")
+                    t {{project}}
+                  form(novalidate,ng-submit="addProject()")
+                    input(type="text",placeholder="project name", ng-model="nProject.name")
+                    br
+                    textarea(placeholder="just another project description", ng-model="nProject.description")
+                    button.btn(type="submit") Create Project
+            tab(heading="Public Teams") 
+              select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in publicTeams")
+              button.btn(ng-click="joinTeam()") Join
+            tab(heading="Create a Team")
+              form(novalidate, ng-submit="createTeam()")
+                input(type="text", placeholder = "name", ng-model="nTeam.name")
+                input(type="text",placeholder = "member cap", ng-model="nTeam.memberCap")
+                button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
+                button.btn(type="submit") Create
+    div.span7
+      h1 The Canvas Goes here.            

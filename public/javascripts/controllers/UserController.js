@@ -23,10 +23,33 @@ function UserController($scope, $http) {
 		message: "",
 		loginAttempts: 0,
 		createUserEnabled: false,
-		loggedIn: false
+		loggedIn: false,
+		isLoginCollapsed: true,
+		isRegisterCollapsed: true,
+		viewingTeams : true,
+		viewTeamDetails : true
 	};
 
 
+	$scope.toggleLogin = function() {
+		$scope.site.isLoginCollapsed = !$scope.site.isLoginCollapsed;
+		if($scope.site.isRegisterCollapsed == true) {
+			
+		}
+		else {
+			$scope.site.isRegisterCollapsed = true;
+		}
+	};
+
+	$scope.toggleRegister = function() {
+		$scope.site.isRegisterCollapsed = !$scope.site.isRegisterCollapsed;
+		if($scope.site.isLoginCollapsed == true) {
+			
+		}
+		else {
+			$scope.site.isLoginCollapsed = true;
+		}
+	};
 
 
 	$scope.checkSession = function() {
@@ -34,6 +57,7 @@ function UserController($scope, $http) {
 			if(data.user.userName.valueOf() == String("null").valueOf()) {
 				//do nothing
 				$scope.site.message = "Please Log in!";
+				$scope.site.isLoginCollapsed = false;
 			}
 			else {
 				$scope.site.message = "Welcome back, " + data.user.firstName;
@@ -42,6 +66,7 @@ function UserController($scope, $http) {
 				$scope.currentUser.firstName = data.user.firstName;
 				$scope.currentUser.lastName = data.user.lastName;
 				$scope.currentUser.email = data.user.email;
+				$scope.site.isLoginCollapsed = true;
 			}
 		});
 	};
@@ -67,14 +92,15 @@ function UserController($scope, $http) {
 				$scope.currentUser.firstName = data.user.firstName;
 				$scope.currentUser.lastName = data.user.lastName;
 				$scope.site.message = "Welcome " + $scope.currentUser.firstName + "!";
-				$scope.site.loggedIn = true;
+				$scope.site.isLoginCollapsed = true;
+				$scope.site.isRegisterCollapsed = true;
 			}
 			
 		});
 	};
 	$scope.createUser = function() {
 		$http.post('/crUser.json', $scope.cUser).success(function(data) {
-			if(data.user.userName.valueOf() == String("NULL").valueOf()) {
+			if(data.user.userName.valueOf() == String("null").valueOf()) {
 				$scope.cUser.firstName = "";
 				$scope.cUser.lastName = "";
 				$scope.cUser.password = "";
