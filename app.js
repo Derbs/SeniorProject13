@@ -66,6 +66,8 @@ app.post('/joinProject.json', routes.joinProject(Project));
 app.post('/leaveProject.json', routes.leaveProject(Project));
 app.post('/updateProjects.json', routes.updateProjects(Project));
 app.post('/updateUserProjects.json', routes.updateUserProjects(Project));
+app.post('/getTasks.json', routes.getTasks(Task));
+app.post('/addTask.json', routes.addTask(Task));
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

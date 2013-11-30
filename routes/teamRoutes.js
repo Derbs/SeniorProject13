@@ -5,6 +5,7 @@ exports.createTeam = function(Team) {
 		team.name = req.body.name;
 		team.open = req.body.open;
 		team.memberCap = req.body.memberCap;
+		team.description = req.body.description;
 		console.log(req.session.user.userName);
 		if(req.session.user.userName.valueOf()==String("null").valueOf()){
 			console.log("No user is logged in - cannot create a team.");

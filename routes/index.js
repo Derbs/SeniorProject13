@@ -6,6 +6,7 @@
 var userRoutes = require('./userRoutes');
 var teamRoutes = require('./teamRoutes');
 var projectRoutes = require('./projectRoutes');
+var taskRoutes = require('./taskRoutes');
 
 exports.login = userRoutes.login;
 exports.createUser = userRoutes.createUser;
@@ -22,6 +23,9 @@ exports.updateProjects = projectRoutes.updateProjects;
 exports.updateUserProjects = projectRoutes.updateUserProjects;
 exports.joinProject = projectRoutes.joinProject;
 exports.leaveProject = projectRoutes.leaveProject;
+
+exports.getTasks = taskRoutes.getTasks;
+exports.addTask = taskRoutes.addTask;
 
 exports.index = function() {
 	return function(req, res) {

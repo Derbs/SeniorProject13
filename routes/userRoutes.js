@@ -23,14 +23,14 @@ exports.login = function(User,Team) {
 				req.session.user.email = fUser.email;
 			}
 		});
-		if(user.userName.valueOf()!=String("null").valueOf()) {
+		/*if(user.userName.valueOf()!=String("null").valueOf()) {
 			Team.find({ $or:[ {leadName : user.userName},
 						   	 {members : user.userName} ] },
 			function(error,fTeams) {
 				console.log("\n\nMember Teams\n" + JSON.stringify(fTeams));
 				res.json({teams : fTeams});
 			});
-		}
+		}*/
 	}
 };
 

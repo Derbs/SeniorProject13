@@ -19,6 +19,9 @@ function UserController($scope, $http, dataService) {
 		password: ""
 	};
 	$scope.site = {
+		currentProject : "",
+		currentTeam : "",
+		currentTask : "",
 		message: "",
 		messageStyle: "",
 		loginAttempts: 0,
@@ -27,7 +30,7 @@ function UserController($scope, $http, dataService) {
 		isLoginCollapsed: true,
 		isRegisterCollapsed: true,
 		viewingTeams : true,
-		viewTeamDetails : true,
+		collapseTeamDetails : true,
 		collapsedTeams : true,
 		collapsedProjects : true,
 		collapsedTasks : true,
@@ -89,15 +92,8 @@ function UserController($scope, $http, dataService) {
 				$scope.site.loggedIn = true;
 				$scope.site.isLoginCollapsed = true;
 				$scope.site.isRegisterCollapsed = true;
-				//alert(data.teams.toString());
+				//broadcast login event to child controllers
 				$scope.$broadcast('login');
-				/*dataService.setTeams(data.teams).then(function() {
-					dataService.getTeams().then(function(obj) {
-						$scope.teams = obj;
-						alert(JSON.stringify(obj));
-					})
-				});*/
-				
 			}
 		});
 	};
@@ -118,6 +114,7 @@ function UserController($scope, $http, dataService) {
 				$scope.cUser.email = "";
 				$scope.cUser.userName = "";
 				$scope.site.message = "Account for " + data.user.userName + " successfully created!  Please Log in";
+				$scope.toggleLogin();
 			}
 		});
 	};

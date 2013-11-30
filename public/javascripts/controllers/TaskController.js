@@ -1,20 +1,25 @@
 function TaskController($scope, $http) {
 	//tasks
 	$scope.nTask = {};
-	$scope.tasks = [];
+	$scope.userTasks = [];
+	$scope.projectTasks = [];
 	$scope.activeTask = {};
+	$scope.activeProjectTask = {};
 
 	$scope.addTask = function() {
-		$http.post('/addTask.json', nTask).success(function(data) {
-			if(data.task.name.valueOf() != String("null").valueOf()) {
-				$scope.tasks.push(data.task);
-			}
+		$scope.nTask.project = $scope.activeUserProject.name;
+		$http.post('/addTask.json', $scope.nTask).success(function(data) {
+			$scope.userTasks.push(data.task);
+			$scope.projectTasks.push(data.task);
 		});
 	};
 
 	$scope.getTasks = function() {
-		$http.post('/getTasks',$scope.activeProject.tasks).success(function(data) {
-			$scope.tasks = data.tasks;
+		$http.post('/getTasks.json',$scope.activeProject).success(function(data) {
+			$scope.userTasks = data.userTasks;
+			$scope.activeTask = ((data.userTasks.length>0) ? data.userTasks[0] : null);
+			$scope.projectTasks = data.projectTasks;
+			$scope.activeProjectTask = ((data.projectTasks.length>0) ? data.projecTasks[0] : null);
 		});
 	};
 

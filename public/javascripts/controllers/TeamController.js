@@ -19,7 +19,7 @@ function TeamController($scope, $http, dataService) {
 		members : []
 	};
 
-	$scope.activeTeam = {};
+	$scope.activeTeam = null;
 	$scope.activePublicTeam = {};
 
 	$scope.toggleTeams = function() {
@@ -38,8 +38,17 @@ function TeamController($scope, $http, dataService) {
 		}
 	};
 
+	$scope.toggleTeamDetails = function() {
+		if($scope.activeTeam != undefined) {
+			$scope.site.collapseTeamDetails = !$scope.site.collapseTeamDetails;
+		}
+		else {
+			$scope.site.collapseTeamDetails = true;
+		}
+	};
+
 	$scope.toggleProjects = function() {
-		if($scope.activeTeam != null) {
+		if($scope.activeTeam != undefined) {
 			if($scope.site.collapsedProjects == true) {
 				$scope.site.collapsedProjects = false;
 				$scope.$broadcast('viewProjects');
@@ -75,14 +84,12 @@ function TeamController($scope, $http, dataService) {
 	$scope.updateTeams = function() {
 		$http.get('/publicTeams.json').success(function(data) {
 			$scope.publicTeams = data.publicTeams;
-			/*$scope.callSetPublicTeams(data.publicTeams).then(function() {
-				$scope.callGetPublicTeams().then(function(obj) {
-					$scope.publicTeams = obj;
-				});
-			});*/
+			$scope.activePublicTeam = ((data.publicTeams.length>0)
+									 ? data.publicTeams[0] : null);
 		});
 		$http.get('/teams.json').success(function(data) {
 			$scope.teams = data.teams;
+			$scope.activeTeam =  ((data.teams.length>0) ? data.teams[0] : null)
 			/*$scope.callSetTeams(data.teams).then(function() {
 				$scope.callGetPublicTeams().then(function(obj) {
 					$scope.teams = obj;
@@ -119,9 +126,7 @@ function TeamController($scope, $http, dataService) {
 			}
 			else {
 				$scope.site.message = "You joined " + data.changedTeam.name+".";
-				var teams = $scope.teams;
-				teams.push(data.changedTeam);
-				$scope.teams = teams;
+				$scope.teams.push(data.changedTeam);
 			}
 		});
 	};
@@ -135,12 +140,13 @@ function TeamController($scope, $http, dataService) {
 	};
 
 	$scope.updateTeam = function(teamName,newTeam) {
-		var indexOfTeam = -1;
 		var teams = $scope.teams;
 		for(var index = 0; index<teams.length; index++) {
 			if(teams[index].name.valueOf()==teamName.valueOf()) {
 				if(newTeam==null) {
-					teams.splice(index,index+1);
+					alert("" + teams.length + "\n" + teams[index].name);
+					teams.splice(index,index);
+					alert(teams.length);
 				}
 				else {
 					teams[index] = newTeam;

@@ -4,11 +4,11 @@ function ProjectController($scope,$http) {
 		//$scope.site.message = "Finding projects for team with name " + $scope.activeTeam.name;
 		$http.post('/updateProjects.json',$scope.activeTeam).success(function(data) {
 			$scope.projects = data.projects;
-			//$scope.activeProject = data.projects[0];
+			$scope.activeProject = ((data.projects.length > 0) ? data.projects[0] : null);
 		});
 		$http.post('/updateUserProjects.json',$scope.activeTeam).success(function(data) {
 			$scope.userProjects = data.projects;
-			//$scope.activeUserProject = data.projects[0];
+			$scope.activeUserProject = ((data.projects.length > 0) ? data.projects[0] : null);
 		});
 	};
 
@@ -22,8 +22,7 @@ function ProjectController($scope,$http) {
 			}
 			else {
 				$scope.projects.push(data.project);
-				alert("Something happened!" + JSON.stringify(data.project));
-				$scope.updateTeam(data.changedTeam.name,data.changedTeam);
+				$scope.userProjects.push(data.project);
 			}
 		});
 	};

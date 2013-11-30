@@ -26,7 +26,7 @@ exports.createProject = function(Team,Project) {
 					console.log("\n\nProject cannot be created.")
 				}
 		});
-		if(project.name.valueOf() != String("null").valueOf()) {
+		/*if(project.name.valueOf() != String("null").valueOf()) {
 			Team.findOne({name:project.team},function(error,fTeam) {
 				if(error||!fTeam) {
 					console.log("Something went wrong when finding a team " + project.team + 
@@ -44,7 +44,7 @@ exports.createProject = function(Team,Project) {
 		}
 		else {
 			console.log("No need to update the team.");
-		}
+		}*/
 	};
 };
 
