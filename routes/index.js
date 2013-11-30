@@ -20,6 +20,9 @@ exports.leaveTeam = teamRoutes.leaveTeam;
 exports.createProject = projectRoutes.createProject;
 exports.updateProjects = projectRoutes.updateProjects;
 exports.updateUserProjects = projectRoutes.updateUserProjects;
+exports.joinProject = projectRoutes.joinProject;
+exports.leaveProject = projectRoutes.leaveProject;
+
 exports.index = function() {
 	return function(req, res) {
 		if(!req.session.inst) {

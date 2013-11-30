@@ -44,7 +44,7 @@ block content
           tabset
             tab(heading="Your Teams")
               div.span4
-                select(ng-model="activeTeam", ng-options="team.name for team in teamData.teams", ng-change="getProjects()")
+                select(ng-model="activeTeam", ng-options="team.name for team in teams", ng-change="getProjects()")
                 button.btn(ng-click="site.viewTeamDetails=!site.viewTeamDetails") Details
                 div(collapse="site.viewTeamDetails")
                   div.span2
@@ -55,7 +55,7 @@ block content
                   div.span4
                     button.btn(class="btn-warning",type="button",ng-click="leaveTeam()") Leave Team
             tab(heading="Public Teams") 
-              select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in teamData.publicTeams")
+              select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in publicTeams")
               button.btn(ng-click="joinTeam()") Join
             tab(heading="New Team")
               form(novalidate, ng-submit="createTeam()")
@@ -63,7 +63,7 @@ block content
                 input(type="text",placeholder = "member cap", ng-model="nTeam.memberCap")
                 button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
                 button.btn(type="submit") Create
-      div(collapse="site.collapsedProjects")
+      div(collapse="site.collapsedProjects",ng-controller="ProjectController")
         div.well
           tabset
             tab(heading="Your Projects")
@@ -78,7 +78,7 @@ block content
                 button.btn-small(type="button",ng-click="leaveProject()") Leave Project
                 small(ng-repeat="person in activeUserProject.people") {{person}}
             tab(heading="Team Projects")
-              select(ng-model="activeProject",ng-options="project.name for project in projects", ng-change="getTasks()")
+              select(ng-model="activeProject",ng-options="project.name for project in projects")
               button.btn-small(type="button",ng-click="site.collapseTeamProjectDetails=!site.collapseTeamProjectDetails") Details
               div(collapse="site.collapseTeamProjectDetails")
                 strong {{activeProject.name}}
@@ -94,13 +94,24 @@ block content
                 input(type="text",placeholder="project name", ng-model="nProject.name")
                 textarea(placeholder="just another project description", ng-model="nProject.description")
                 button.btn(type="submit") Create Project
-      div(collapse="site.collapsedTasks")
+      div(collapse="site.collapsedTasks",ng-controller="TaskController")
         div.well
           tabset
             tab(heading="Your Tasks")
+              select(ng-model="activeTask",ng-options="task.name for task in userTasks")
+              button.btn-small(type="button",ng-click="site.collapseTaskDetails = !site.collapseTaskDetails") Details
+              div(collapse = "site.collapseTaskDetails")
+                input(type="checkbox") 
+                t activeTask.description
+                br
+                ul(ng-repeat="value in activeTask.changelog")
+                  li {{value}}
             tab(heading="Project Tasks")
             tab(heading="New Task")
-              form(novalidate,ng-submit="addTask()")
-                
+              form(novalidate,ng-submit="addTask()",ng-model="nTask")
+                input(type="text",placeholder="Pithy Title",ng-model="nTask.name")
+                textarea(placeholder="lengthy description",ng-model="nTask.description")
+                input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
+                button.btn(type="submit") Submit
     div.span11
       canvas(id="canvas")

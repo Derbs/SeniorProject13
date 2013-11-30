@@ -62,6 +62,8 @@ app.post('/createProject.json', routes.createProject(Team, Project));
 app.get('/session',routes.session());
 app.post('/joinTeam.json', routes.joinTeam(Team,User));
 app.post('/leaveTeam.json', routes.leaveTeam(Team,User));
+app.post('/joinProject.json', routes.joinProject(Project));
+app.post('/leaveProject.json', routes.leaveProject(Project));
 app.post('/updateProjects.json', routes.updateProjects(Project));
 app.post('/updateUserProjects.json', routes.updateUserProjects(Project));
 http.createServer(app).listen(app.get('port'), function(){

@@ -6,30 +6,52 @@ var myApp = angular.module('TaskModule', ['ui.bootstrap']);
 	}
 })*/
 
-myApp.factory('dataService', function() {
+myApp.factory('dataService', function($q,$timeout) {
 	var teams = [];
-	var privateTeams = [];
+	var publicTeams = [];
 	var projects = [];
 	var userProjects = [];
 	var tasks = [];
-	var service = {};
-	service.setTeams = function(tms) {
-		teams = tms;
+	var service = {
+		teams : [],
+		publicTeams : [],
+		projects : [],
+		userProjects : []
 	};
-	service.setPrivateTeams = function(tms) {
-		privateTeams = tms;
+	service.setTeams = function(tms) {
+		var deferred = $q.defer();
+		teams = tms;
+		alert(JSON.stringify(tms));
+		deferred.resolve();
+		return deferred.promise;
+	};
+	service.setPublicTeams = function(tms) {
+		var deferred = $q.defer();
+		publicTeams = tms;
+		deferred.resolve();
+		return deferred.promise;
 	};
 	service.setProjects = function(prjs) {
+		var deferred = $q.defer();
 		projects = prjs;
+		deferred.resolve();
+		return deferred.promise;
 	};
 	service.setUserProjects = function(prjs) {
+		var deferred = $q.defer();
 		projects = prjs;
+		deferred.resolve();
+		return deferred.promise;
 	};
 	service.getTeams = function() {
-		return teams;
+		var deferred = $q.defer();
+		deferred.resolve(teams);
+		return deferred.promise;
 	};
-	service.getPrivateTeams = function() {
-		return privateTeams;
+	service.getPublicTeams = function() {
+		var deferred = $q.defer();
+		deferred.resolve(publicTeams);
+		return deferred.promise;
 	};
 	service.getProjects = function() {
 		return projects;

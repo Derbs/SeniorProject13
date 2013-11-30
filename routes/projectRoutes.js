@@ -85,3 +85,59 @@ exports.updateUserProjects = function(Project) {
 		});
 	};
 };
+
+exports.joinProject = function(Project) {
+	return function(req,res) {
+		var projectName = req.body.name;
+		var newMember = req.session.user.userName;
+		console.log("Joining the project, " + projectName +", as user " + newMember + ".");
+		Project.findOne({name:projectName},function(error,fProject) {
+			if(error||!fProject) {
+				console.log("It appears that this project doesn't exist.");
+			}
+			else {
+				if(fProject.people.indexOf(newMember)==-1) {
+					fProject.people.addToSet(newMember);
+					fProject.save();
+					res.json({project : fProject});
+				}
+				else {
+					var empPrj = new Project();
+					empPrj.name = "null";
+					res.json({project : empPrj});
+					console.log(newMember + " is already a member of " + projectName);
+				}
+			}
+		});
+	};
+};
+
+exports.leaveProject = function(Project) {
+	return function(req,res) {
+		var projectName = req.body.name;
+		var quittingMember = req.session.user.userName;
+		console.log("Attempting to remove " + quittingMember + " from " + projectName + "\n\n");
+		Project.findOne({name:projectName},function(error,fProject) {
+			if(error||!fProject) {
+				console.log("Can't seem to find this project.");
+			}
+			else if(fProject.people.indexOf(quittingMember)==-1) {
+				console.log(quittingMember + " is not a member of this project, and so they don't need to quit...");
+			}
+			else {
+				fProject.people.splice(fProject.people.indexOf(quittingMember),
+									   fProject.people.indexOf(quittingMember)+1);
+				fProject.save();
+				console.log("Successfully removed " + quittingMember + " from " + projectName + ".\n\n" +
+							"The members left are " + fProject.people);
+				if(fProject.people.length==0) {
+					console.log("There are no members left, so the project is dead!");
+					fProject.remove();
+				}
+				else {
+					console.log("There is one less member in the project.");
+				}
+			}
+		});
+	};
+};

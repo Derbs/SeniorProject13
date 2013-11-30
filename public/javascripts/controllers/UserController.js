@@ -1,4 +1,4 @@
-function UserController($scope, $http) {
+function UserController($scope, $http, dataService) {
 	$scope.currentUser = {
 		userName: "",
 		firstName: "",
@@ -32,14 +32,8 @@ function UserController($scope, $http) {
 		collapsedProjects : true,
 		collapsedTasks : true,
 		collapseTeamProjectDetails : true,
-		collapseOwnProjectDetails : true,
+		collapseOwnProjectDetails : true
 	};
-
-	$scope.teamData = {
-		teams :[],
-		publicTeams:[]
-	};
-
 
 	$scope.toggleLogin = function() {
 		$scope.site.isLoginCollapsed = !$scope.site.isLoginCollapsed;
@@ -95,8 +89,15 @@ function UserController($scope, $http) {
 				$scope.site.loggedIn = true;
 				$scope.site.isLoginCollapsed = true;
 				$scope.site.isRegisterCollapsed = true;
-				$scope.teamData.teams = data.teams;
-				$scope.$apply();
+				//alert(data.teams.toString());
+				$scope.$broadcast('login');
+				/*dataService.setTeams(data.teams).then(function() {
+					dataService.getTeams().then(function(obj) {
+						$scope.teams = obj;
+						alert(JSON.stringify(obj));
+					})
+				});*/
+				
 			}
 		});
 	};
@@ -121,3 +122,5 @@ function UserController($scope, $http) {
 		});
 	};
 }
+
+UserController.$inject = ['$scope','$http','dataService'];
