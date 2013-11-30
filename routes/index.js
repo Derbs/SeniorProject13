@@ -18,7 +18,8 @@ exports.joinTeam = teamRoutes.joinTeam;
 exports.leaveTeam = teamRoutes.leaveTeam;
 
 exports.createProject = projectRoutes.createProject;
-
+exports.updateProjects = projectRoutes.updateProjects;
+exports.updateUserProjects = projectRoutes.updateUserProjects;
 exports.index = function() {
 	return function(req, res) {
 		if(!req.session.inst) {
@@ -68,15 +69,6 @@ exports.getTodos = function(Todo) {
 	}
 };
 
-exports.getProjects = function(Project) {
-	return function(req,res) {
-		Project.find({}, function(error, projects) {
-			res.json({
-				projects : projects
-			});
-		});
-	}
-};
 
 exports.update = function(Todo) {
 	return function(req,res) {

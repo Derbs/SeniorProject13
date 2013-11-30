@@ -62,10 +62,11 @@ exports.updateTeamsByMembership = function(Team) {
 	}
 };
 
-exports.joinTeam = function(Team) {
+exports.joinTeam = function(Team,User) {
 	return function(req,res) {
 		console.log("Attempting to join a team with name " + req.body.name);
 		var team = new Team();
+		var user = new User(); 
 		team.name = "null";
 		Team.findOne({name : req.body.name}, function(error,fTeam) {
 			console.log("Found this team:" + JSON.stringify(fTeam));
@@ -88,7 +89,7 @@ exports.joinTeam = function(Team) {
 	}
 };
 
-exports.leaveTeam = function(Team) {
+exports.leaveTeam = function(Team,User) {
 	return function(req,res) {
 		console.log("Attemption to leave a team with name " + req.body.name);
 		Team.findOne({name : req.body.name},function(error,fTeam) {
@@ -102,20 +103,27 @@ exports.leaveTeam = function(Team) {
 			else {
 				console.log("The current members are " + fTeam.members);
 				fTeam.members.splice(fTeam.members.indexOf(req.session.user.userName),
-									 fTeam.members.indexOf(req.session.user.userName));
+									 fTeam.members.indexOf(req.session.user.userName)+1);
+				fTeam.save();
+				console.log("The index of the members is " + fTeam.members.indexOf(req.session.user.userName));
 				res.json({removedTeamName : fTeam.name});
-				console.log("After delettion, the current members are " + fTeam.members);
+				console.log("After deletion, the current members are " + fTeam.members);
+
 				if(fTeam.members.length==0) {
 					fTeam.remove();
 					console.log("As the team is empty, it has been deleted.");
 				}
 				else {
 					console.log("There is one less member in the team.");
-					fTeam.save();
+					if(fTeam.leadName.valueOf() == req.session.user.userName) {
+						console.log("Removing " + req.session.user.userName + " from leadership, the quitter!");
+						fTeam.leadName = fTeam.members[0];
+						fTeam.save();
+					}
 				}
 				console.log("Successfully left team.");
 			}
-		})
+		});
 	};
 };
 

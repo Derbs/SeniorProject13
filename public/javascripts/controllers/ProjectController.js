@@ -1,3 +1,3 @@
 function ProjectController($scope,$http) {
 	
-}
+};

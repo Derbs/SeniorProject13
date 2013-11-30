@@ -12,8 +12,9 @@ html(ng-app="TaskModule")
     sript(type='text/javascript', src='/javascripts/controllers/TodoListController.js')
     script(type='text/javascript', src='/javascripts/controllers/UserController.js')
     script(type='text/javascript', src='/javascripts/controllers/TeamController.js');
+    script(type='text/javascript', src='/javascripts/controllers/CanvasController.js');
     block head
 
   body
-    div.container-fluid(ng-controller="UserController")
+    div.container-fluid(ng-controller="UserController",data-ng-init="checkSession()")
       block content

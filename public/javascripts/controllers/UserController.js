@@ -1,5 +1,4 @@
 function UserController($scope, $http) {
-
 	$scope.currentUser = {
 		userName: "",
 		firstName: "",
@@ -21,34 +20,35 @@ function UserController($scope, $http) {
 	};
 	$scope.site = {
 		message: "",
+		messageStyle: "",
 		loginAttempts: 0,
 		createUserEnabled: false,
 		loggedIn: false,
 		isLoginCollapsed: true,
 		isRegisterCollapsed: true,
 		viewingTeams : true,
-		viewTeamDetails : true
+		viewTeamDetails : true,
+		collapsedTeams : true,
+		collapsedProjects : true,
+		collapsedTasks : true,
+		collapseTeamProjectDetails : true,
+		collapseOwnProjectDetails : true,
+	};
+
+	$scope.teamData = {
+		teams :[],
+		publicTeams:[]
 	};
 
 
 	$scope.toggleLogin = function() {
 		$scope.site.isLoginCollapsed = !$scope.site.isLoginCollapsed;
-		if($scope.site.isRegisterCollapsed == true) {
-			
-		}
-		else {
-			$scope.site.isRegisterCollapsed = true;
-		}
+		$scope.site.isRegisterCollapsed = true;
 	};
 
 	$scope.toggleRegister = function() {
 		$scope.site.isRegisterCollapsed = !$scope.site.isRegisterCollapsed;
-		if($scope.site.isLoginCollapsed == true) {
-			
-		}
-		else {
-			$scope.site.isLoginCollapsed = true;
-		}
+		$scope.site.isLoginCollapsed = true;
 	};
 
 
@@ -92,10 +92,12 @@ function UserController($scope, $http) {
 				$scope.currentUser.firstName = data.user.firstName;
 				$scope.currentUser.lastName = data.user.lastName;
 				$scope.site.message = "Welcome " + $scope.currentUser.firstName + "!";
+				$scope.site.loggedIn = true;
 				$scope.site.isLoginCollapsed = true;
 				$scope.site.isRegisterCollapsed = true;
+				$scope.teamData.teams = data.teams;
+				$scope.$apply();
 			}
-			
 		});
 	};
 	$scope.createUser = function() {

@@ -9,6 +9,7 @@ var http = require('http');
 var path = require('path');
 var Mongoose = require('mongoose');
 
+
 //important!  We connect to mongoose first and leave it open for 
 // the duration of the app's life.
 var db = Mongoose.createConnection('localhost', 'ExpTut'); 
@@ -23,7 +24,7 @@ app.use(express.session({secret: '1234567890QWERTY'}));
 
 //compile schemas here.
 var Models = require('./models/Models'); //import schemas from Models.js
-var Todo = db.model('todos', Models.TodoSchema);
+var Task = db.model('tasks', Models.TaskSchema);
 var Project = db.model('projects', Models.ProjectSchema);
 var User = db.model('users', Models.UserSchema);
 var Team = db.model('teams', Models.TeamSchema);
@@ -50,13 +51,8 @@ if ('development' == app.get('env')) {
 }
 //--end express intializing stuff--
 
-app.set('todos', routes.getTodos(Todo));
-
 app.get('/', routes.index());
-app.get('/todos.json', routes.getTodos(Todo));
-app.put('/todo/:id.json', routes.update(Todo));
 app.post('/createTeam.json', routes.createTeam(Team));
-app.post('/todo.json', routes.addTodo(Todo));
 
 app.get('/teams.json',routes.updateTeamsByMembership(Team));
 app.get('/publicteams.json',routes.updatePublicTeams(Team));
@@ -64,9 +60,10 @@ app.post('/user.json', routes.login(User,Team));
 app.post('/crUser.json', routes.createUser(User));
 app.post('/createProject.json', routes.createProject(Team, Project));
 app.get('/session',routes.session());
-app.post('/joinTeam.json', routes.joinTeam(Team));
-app.post('/leaveTeam.json', routes.leaveTeam(Team));
-
+app.post('/joinTeam.json', routes.joinTeam(Team,User));
+app.post('/leaveTeam.json', routes.leaveTeam(Team,User));
+app.post('/updateProjects.json', routes.updateProjects(Project));
+app.post('/updateUserProjects.json', routes.updateUserProjects(Project));
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

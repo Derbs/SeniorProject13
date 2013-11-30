@@ -16,6 +16,5 @@ exports.UserSchema = new Mongoose.Schema({
 				  required : true},
 	lastName : { type : String, 
 				 required : true},
-	teams : [{type : String}], //a user does not need to belong to a team.
 	joined : { type : Date }
 });

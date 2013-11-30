@@ -8,11 +8,10 @@ exports.login = function(User,Team) {
 					   'password' : req.body.password },
 		function(error,fUser) {
 			if(error || !fUser) {
-				var emp = new User();
-				emp.userName = "null";
-				emp.password = "";
+				user.userName = "null";
+				user.password = "";
 				console.log("No user with that name found.");
-				res.json({user : emp});
+				res.json({user : user});
 			}
 			else{
 				console.log("We found user with name " + fUser.userName);
@@ -30,6 +29,14 @@ exports.login = function(User,Team) {
 				});*/
 			}
 		});
+		if(user.userName.valueOf()!=String("null").valueOf()) {
+			Team.find({ $or:[ {leadName : user.userName},
+						   	 {members : user.userName} ] },
+			function(error,fTeams) {
+				console.log("\n\nMember Teams\n" + JSON.stringify(fTeams));
+				res.json({teams : fTeams});
+			});
+		}
 	}
 };
 

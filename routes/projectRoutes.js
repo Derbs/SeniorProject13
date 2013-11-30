@@ -26,19 +26,62 @@ exports.createProject = function(Team,Project) {
 					console.log("\n\nProject cannot be created.")
 				}
 		});
-		Team.findOne({name:project.team},function(error,fTeam) {
-			if(error||!fTeam) {
-				console.log("Something went wrong when finding a team " + project.team + 
-					"for project with name " + project.name +"...");
+		if(project.name.valueOf() != String("null").valueOf()) {
+			Team.findOne({name:project.team},function(error,fTeam) {
+				if(error||!fTeam) {
+					console.log("Something went wrong when finding a team " + project.team + 
+						"for project with name " + project.name +"...");
+				}
+				else {
+					console.log("Now we're updating the team.\n\n");
+					fTeam.projects.addToSet(project.name);
+					console.log(JSON.stringify(fTeam.projects));
+					console.log(JSON.stringify(fTeam));
+					fTeam.save();
+					res.json({changedTeam:fTeam});
+				}
+			});
+		}
+		else {
+			console.log("No need to update the team.");
+		}
+	};
+};
+
+exports.updateProjects = function(Project) {
+	return function(req,res) {
+		var teamName = req.body.name;
+		console.log(req.body.name);
+		console.log("Finding projects for team " + teamName + "...");
+		Project.find({team:teamName}, function(error, fProjects) {
+			if(error||!fProjects||fProjects.length===0) {
+				console.log("This team appears to have no projects.\n\n");
+				res.json({projects : []});
 			}
 			else {
-				console.log("Now we're updating the team.\n\n");
-				fTeam.projects.addToSet(project.name);
-				console.log(JSON.stringify(fTeam.projects));
-				console.log(JSON.stringify(fTeam));
-				fTeam.save();
-				res.json({changedTeam:fTeam});
+				console.log("This team appears to have projects! \n\n" +
+					"Number: " + fProjects.length + "\n" + 
+					"details: " + JSON.stringify(fProjects) + "\n\n");
+				res.json({projects : fProjects});
 			}
-		})
-	}
-}
+		});
+	};
+};
+
+exports.updateUserProjects = function(Project) {
+	return function(req,res) {
+		var teamName = req.body.name;
+		var teamMember = req.session.user.userName;
+		var projects = [];
+		console.log("Finding projects for the specific user-team pair, (" + teamMember + "," + teamName+")");
+		Project.find({team:teamName},function(error,fProjects) {
+			for(var i = 0; i<fProjects.length; i++) {
+				if(fProjects[i].people.indexOf(teamMember)!=-1) {
+					projects.push(fProjects[i]);
+				}
+			}
+			console.log(JSON.stringify(projects));
+			res.json({projects : projects});
+		});
+	};
+};
