@@ -84,6 +84,7 @@ function TeamController($scope, $http, $timeout) {
 	$scope.teamSwitch = function() {
 		$scope.$broadcast('viewProjects');
 		$scope.site.collapsedProjects = false;
+		$scope.site.collapsedTask = true;
 	};
 
 	$scope.toggleTasks = function() {

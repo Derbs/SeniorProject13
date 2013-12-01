@@ -109,14 +109,20 @@ block content
                   input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
                   button.btn(type="submit") Submit
               tab(heading="Your Tasks")
-                select(ng-model="activeTask",ng-options="task.name for task in userTasks")
-                button.btn-small(type="button",ng-click="site.collapseTaskDetails = !site.collapseTaskDetails") Details
-                div(collapse = "site.collapseTaskDetails")
-                  input(type="checkbox") 
-                  p {{activeTask.description}}
-                  br
-                  ul(ng-repeat="value in activeTask.changelog")
-                    li {{value}}
+                ul(ng-repeat="task in userTasks")
+                  li
+                    input(type="checkbox",tooltip-placement="bottom",tooltip="Mark Complete") 
+                    strong(tooltip = "View log", tooltip-placement="top" ng-click="task.collapseChangeLog = !task.collapseChangeLog") 
+                      {{task.name}}:
+                    em {{" " + task.description}}
+                    button.pull-right(class="btn btn-small btn-error", ng-click = "deleteTask(task)") Delete
+                    div(collapse = "task.collapseChangeLog")
+                      form(ng-submit="updateTask(task)")
+                        input(type="text", placeholder="Any updates?", ng-model="task.newChange")
+                        button.btn(type="submit") Update
+                      ul(ng-repeat="change in task.changelog")
+                        li 
+                          i {{change}}
               tab(heading="Project Tasks")
                 select(ng-model="activeProjectTask",ng-options="task.name for task in projectTasks")
             div(collapse="taskAlert.collapse")

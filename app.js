@@ -81,6 +81,7 @@ app.post('/addTask.json', routes.addTask(Task));
 app.post('/updateTask.json', routes.updateTask(Task));
 app.post('/completeTask.json', routes.completeTask(Task));
 app.post('/deleteTask.json', routes.deleteTask(Task));
+app.post('/joinTask.json', routes.joinTask(Task));
 
 
 //start app server

@@ -89,25 +89,29 @@ exports.getProjectTasks = function(Task) {
 				res.json({projectTasks:pTasks});
 			}
 		});
-		//finding user specific tasks within the given project next.
-		//querying on a few different things.  
+		 
 	};
 };
 
 exports.updateTask = function(Task) {
 	return function(req, res) {
-		console.log("Updating Task \"" + req.body.task.name + "\" " + req.body.task.description + "\n\n");
-		console.log("Current changelog: " + req.body.task.changelog + "\n\n");
-		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
+		console.log("Updating Task \"" + req.body.name + "\" " + req.body.description + "\n\n");
+		console.log("Changelog addition: " + req.body.newChange + "\n\n");
+		console.log("old changelog: " + req.body.changelog);
+		//finding user specific tasks within the given project next.
+		//querying on a few different things. 
+		var newChange = req.body.newChange + "  -" + req.session.user.firstName + " " + req.session.user.lastName;
+		Task.findOne({_id : req.body._id}, function(error,fTask) {
 			if(error||!fTask) {
 				console.log("This task doesn't exist");
-				res.json({id:-1});
+				res.json({task:null});
 			}
 			else {
-				consoel.log("Success!");
-				fTask.changelog.push(changelog);
+				console.log("Success!");
+				console.log("Adding this to changelog: " + newChange);
+				fTask.changelog.addToSet(newChange);
 				fTask.save();
-				res.json({id:fTask._id});
+				res.json({task:fTask});
 			}
 		});
 	};
@@ -116,34 +120,60 @@ exports.updateTask = function(Task) {
 exports.completeTask = function(Task) {
 	return function(req, res) {
 		console.log("Attempting to mark task " + req.body.task.name + " as complete.\n\n");
-		Task.findOne({_id : req.body.task._id}, function(error,fTask)) {
+		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
 			if(error||!fTask) {
 				console.log("This task doesn't exist.");
-				res.json({id:-1});
+				res.json({task:null});
 			}
 			else {
 				console.log("Success");
 				fTask.complete = true;
 				fTask.save();
-				res.json({id:fTask._id});
+				res.json({task:fTask});
 			}
-		};
+		});
 	};
 };
 
-exports.deleteTask = function(task) {
+exports.deleteTask = function(Task) {
 	return function(req, res) {
-		console.log("Attempting to remove task " + req.body.task.name);
-		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
+		console.log("Attempting to remove task " + req.body.name);
+		Task.findOne({_id : req.body._id}, function(error,fTask) {
 			if(error||!fTask) {
 				console.log("This task doesn't exist - perhaps it is already removed?");
-				res.json({id:-1});
+				res.json({task:null});
+			}
+			else if (req.session.user.userName.valueOf() != fTask.initiator.valueOf()) {
+				console.log("You don't have permission to change this task.");
+				res.json({task:null});
 			}
 			else {
 				console.log("Success");
-				res.json({id : fTask._id});
+				res.json({task : fTask});
 				fTask.remove();
 			}
 		});
 	};
+};
+
+exports.joinTask = function(Task) {
+	return function(req,res) {
+		console.log("Attempting to join task " + req.body.name + " as user " + req.session.user.userName);
+		Task.findOne({_id : req.body._id}, function(error,fTask) {
+			if(error||!fTask) {
+				console.log("This task doesn't seem to exist!");
+				res.json({task : null});
+			}
+			else if (fTask.supporters.indexOf(req.session.user.userName)!=-1) {
+				console.log("The user " + req.session.user.userName + " have already joined this task.");
+				res.json({task : null});
+			}
+			else {
+				console.log("Joining task!");
+				fTask.supporters.addToSet(req.session.user.userName);
+				fTask.save();
+				res.json({task : fTask});
+			}
+		});
+	}
 };

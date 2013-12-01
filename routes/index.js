@@ -30,6 +30,7 @@ exports.addTask = taskRoutes.addTask;
 exports.updateTask = taskRoutes.updateTask;
 exports.completeTask = taskRoutes.completeTask;
 exports.deleteTask = taskRoutes.deleteTask;
+exports.joinTask = taskRoutes.joinTask;
 
 exports.index = function() {
 	return function(req, res) {
