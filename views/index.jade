@@ -2,9 +2,11 @@ extends layout
 block head
   link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
 block content
-  div.navbar
+  div.navbar(class="navbar-inverse")
     div.navbar-inner
-      a.brand(href="#") Seeing The Forest
+      a.brand(href="#" tooltip="For the Trees", 
+        tooltip-placement="bottom",
+        tooltip-popup-delay="2500") Seeing The Forest
       ul.nav
         li
           a.disabled(href= "", ng-click="toggleLogin()") Login
@@ -43,25 +45,31 @@ block content
           tabset
             tab(heading="New Team")
               form(novalidate, ng-submit="createTeam()")
-                input.span2(type="text", placeholder = "A Cool Name", ng-model="nTeam.name")
-                input.span2(type="text",placeholder = "Member #", ng-model="nTeam.memberCap")
-                button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
+                input.span8(type="text", placeholder = "A Cool Name", ng-model="nTeam.name")
+                input.span3(type="text",placeholder = "Member #", ng-model="nTeam.memberCap")
+                textarea.span11(placeholder = "A Lengthy Description", ng-model="nTeam.description")
                 br
-                textarea.span4(placeholder = "A Lengthy Description", ng-model="nTeam.description")
-                button.btn(type="submit", tooltip-placement="right", tooltip="Create a team called '{{nTeam.name}}'") Create
+                t Public:
+                input(type="checkbox", 
+                  tooltip="Is this team open to anyone?",
+                  tooltip-placement="right",
+                  ng-model="nTeam.open") 
+                button.btn(class="pull-right", type="submit", tooltip-placement="left", tooltip="Create a team called '{{nTeam.name}}'") Create
             tab(heading="Your Teams")
               div
-                select(ng-model="activeTeam", ng-options="team.name for team in teams",ng-change="teamSwitch()")
-                button.btn(ng-click="toggleTeamDetails()") Details
-                div.row-fluid(collapse="site.collapseTeamDetails")
-                  div.span2
-                    label(class="success",ng-model="activeTeam.open") {{activeTeam.status}}
-                  div.span2 Members:
-                    ul(ng-repeat="person in activeTeam.members") 
-                      li {{person}}
-                  div.span4
-                    p {{activeTeam.description}}
-                    button.btn(class="btn-warning",type="button",ng-click="leaveTeam()") Leave Team
+                ul(class="nav-pills nav-stacked nav", ng-repeat ="team in teams")
+                  li 
+                    strong(ng-click="teamSwitch(team);",
+                      tooltip="Click to select this team.",
+                      tooltip-placement="right") {{team.name}}
+                  div(collapse="team.collapseTeamDetails")
+                    {{team.description}}
+                    br
+                    em Members:
+                    small 
+                      ul(ng-repeat="person in team.members") 
+                        li {{person}}
+                    button.btn(class="btn-danger",type="button",ng-click="leaveTeam(team)") Leave Team
             tab(heading="Public Teams") 
               div
                 select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in publicTeams")
@@ -87,6 +95,10 @@ block content
                   a.disabled(href="") {{project.name}}
                 div(collapse="project.collapse")
                   p {{project.description}}
+                  strong Current Members
+                  ul(ng-repeat="member in project.people")
+                    li 
+                      i {{member}}
                   button(type="button",ng-click="joinProject(project)") Join Project
           button.btn-block(type="button", class="disabled btn-info", ng-click="site.collapseAddProject=!site.collapseAddProject") Add another project
           br
@@ -104,18 +116,24 @@ block content
             tabset
               tab(heading="New Task")
                 form(novalidate,ng-submit="addTask()")
-                  input(type="text",placeholder="Pithy Title", popover = "Short Task Title", popover-trigger="mouseenter",ng-model="nTask.name")
+                  input(type="text",placeholder="Pithy Title", tooltip = "Short Task Title",ng-model="nTask.name")
                   textarea(placeholder="Lengthy Description",ng-model="nTask.description")
-                  input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
+                  input(type="text",placeholder="Desired Supporters",
+                    tooltip="The number of people needed to complete the task.",
+                    tooltip-placement="top",
+                    ng-model="nTask.seedMin")
                   button.btn(type="submit") Submit
               tab(heading="Your Tasks")
                 ul(ng-repeat="task in userTasks")
                   li
-                    input(type="checkbox",tooltip-placement="bottom",tooltip="Mark Complete") 
-                    strong(tooltip = "View log", tooltip-placement="top" ng-click="task.collapseChangeLog = !task.collapseChangeLog") 
+                    input(type="checkbox",tooltip-placement="top",tooltip="Mark Complete",ng-change="completeTask(task)",ng-model="task.complete") 
+                    strong(ng-style="task.style", 
+                      tooltip = "View log", 
+                      tooltip-placement="top", 
+                      ng-click="task.collapseChangeLog = !task.collapseChangeLog") 
                       {{task.name}}:
-                    em {{" " + task.description}}
-                    button.pull-right(class="btn btn-small btn-error", ng-click = "deleteTask(task)") Delete
+                    i {{" " + task.description}}
+                    button.pull-right(class="btn btn-small btn-danger", ng-click = "deleteTask(task)") Delete
                     div(collapse = "task.collapseChangeLog")
                       form(ng-submit="updateTask(task)")
                         input(type="text", placeholder="Any updates?", ng-model="task.newChange")
@@ -124,7 +142,17 @@ block content
                         li 
                           i {{change}}
               tab(heading="Project Tasks")
-                select(ng-model="activeProjectTask",ng-options="task.name for task in projectTasks")
+                ul(ng-repeat="task in projectTasks")
+                  li
+                    strong(ng-style="task.style", 
+                      tooltip-placement="top",
+                      tooltip="Initiated by {{task.initiator}}")
+                      {{task.name}}:
+                    i {{" " + task.description}}
+                    button.pull-right(class="btn btn-small btn-success", 
+                      tooltip="Add this task to your tasks.", 
+                      tooltip-placement="left", 
+                      ng-click = "joinTask(task)") Join
             div(collapse="taskAlert.collapse")
               alert(type="taskAlert.type",close="taskAlert.collapse = true")
                 {{taskAlert.message}}

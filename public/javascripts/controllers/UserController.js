@@ -123,7 +123,17 @@ function UserController($scope, $http, dataService) {
 
 	$scope.setCurrentTeam = function(val) {
 		$scope.site.currentTeam = val;
-	}
+	};
+
+	//useful 'global' function(s)
+	$scope.today = function() {
+		var d = new Date();
+		var tod = (d.getHours()>12) ? "pm" : "am";
+		var mins = (d.getMinutes()<10) ? "0"+d.getMinutes() : d.getMinutes();
+		return "" + (d.getHours()%12) + ":"+ mins + "" + tod +
+		   " " + d.getDate() + "/" + d.getMonth() + "/" + 
+		   d.getFullYear();
+	};
 }
 
 UserController.$inject = ['$scope','$http','dataService'];

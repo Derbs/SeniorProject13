@@ -101,11 +101,11 @@ exports.leaveProject = function(Project) {
 		Project.findOne({name:projectName},function(error,fProject) {
 			if(error||!fProject) {
 				console.log("Can't seem to find this project.");
-				res.json({id:-1});
+				res.json({project: null});
 			}
 			else if(fProject.people.indexOf(quittingMember)==-1) {
 				console.log(quittingMember + " is not a member of this project, and so they don't need to quit...");
-				res.json({id:-1});
+				res.json({project:null});
 			}
 			else {
 				fProject.people.splice(fProject.people.indexOf(quittingMember), 1);
@@ -115,11 +115,13 @@ exports.leaveProject = function(Project) {
 				if(fProject.people.length==0) {
 					console.log("There are no members left, so the project is dead!");
 					fProject.remove();
+					res.json({project : null});
 				}
 				else {
+					res.json({project : fProject});
 					console.log("There is one less member in the project.");
 				}
-				res.json({id : fProject._id});
+				
 			}
 		});
 	};

@@ -17,6 +17,6 @@ html(ng-app="TaskModule")
     script(type='text/javascript', src='/javascripts/controllers/CanvasController.js');
     block head
 
-  body
+  body.base
     div.container-fluid(ng-controller="UserController",data-ng-init="checkSession()")
       block content

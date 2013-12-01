@@ -100,7 +100,7 @@ exports.updateTask = function(Task) {
 		console.log("old changelog: " + req.body.changelog);
 		//finding user specific tasks within the given project next.
 		//querying on a few different things. 
-		var newChange = req.body.newChange + "  -" + req.session.user.firstName + " " + req.session.user.lastName;
+		var newChange = req.body.newChange + "  -" + req.session.user.firstName + " " + req.session.user.lastName + " at " + today();
 		Task.findOne({_id : req.body._id}, function(error,fTask) {
 			if(error||!fTask) {
 				console.log("This task doesn't exist");
@@ -119,20 +119,41 @@ exports.updateTask = function(Task) {
 
 exports.completeTask = function(Task) {
 	return function(req, res) {
-		console.log("Attempting to mark task " + req.body.task.name + " as complete.\n\n");
-		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
+		console.log("Attempting to mark task " + req.body.name + " as complete.\n\n");
+		Task.findOne({_id : req.body._id}, function(error,fTask) {
 			if(error||!fTask) {
 				console.log("This task doesn't exist.");
 				res.json({task:null});
 			}
+			else if (fTask.initiator.valueOf()!= req.session.user.userName.valueOf()) {
+				console.log("This isn't allowed for this user.");
+				res.json({task:null});
+			}
 			else {
 				console.log("Success");
-				fTask.complete = true;
+				fTask.complete = !fTask.complete;
+				if (fTask.complete == true ) {
+					fTask.changelog.addToSet("Marked complete by " + req.session.user.firstName + " " + req.session.user.lastName +
+											 " at " + today());
+				}
+				else {
+					fTask.changelog.addToSet("Marked not complete by " + req.session.user.firstName + " " + req.session.user.lastName +
+											 " at " + today());
+				}
 				fTask.save();
 				res.json({task:fTask});
 			}
 		});
 	};
+};
+
+var today = function() {
+	var d = new Date();
+	var tod = (d.getHours()>12) ? "pm" : "am";
+	var mins = (d.getMinutes()<10) ? "0"+d.getMinutes() : d.getMinutes();
+	return "" + (d.getHours()%12) + ":"+ mins + "" + tod + " "
+		   " " + d.getDate() + "/" + d.getMonth() + "/" + 
+		   d.getFullYear();
 };
 
 exports.deleteTask = function(Task) {
@@ -145,7 +166,10 @@ exports.deleteTask = function(Task) {
 			}
 			else if (req.session.user.userName.valueOf() != fTask.initiator.valueOf()) {
 				console.log("You don't have permission to change this task.");
-				res.json({task:null});
+				console.log("Quitting Task instead!");
+				fTask.supporters.splice(fTask.supporters.indexOf(req.session.user.userName),1);
+				fTask.save();
+				res.json({task:fTask});
 			}
 			else {
 				console.log("Success");
@@ -164,7 +188,7 @@ exports.joinTask = function(Task) {
 				console.log("This task doesn't seem to exist!");
 				res.json({task : null});
 			}
-			else if (fTask.supporters.indexOf(req.session.user.userName)!=-1) {
+			else if (fTask.supporters.indexOf(req.session.user.userName)!=-1 || fTask.initiator.valueOf() == req.session.user.userName.valueOf()) {
 				console.log("The user " + req.session.user.userName + " have already joined this task.");
 				res.json({task : null});
 			}

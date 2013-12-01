@@ -12,6 +12,7 @@ function TaskController($scope, $http) {
 	$scope.activeTask = {};
 	$scope.activeProjectTask = {};
 	$scope.changeLog = "";
+	$scope.allowTasks = false;
 	$scope.taskAlert = {
 		collapse : true,
 		type : 'success',
@@ -48,7 +49,8 @@ function TaskController($scope, $http) {
 			for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
 				if($scope.userTasks[i].name.valueOf() == data.task.name.valueOf() && 
 				   $scope.userTasks[i].description.valueOf() == data.task.description.valueOf()) {
-					$scope.userTasks[i].changelog.push(change + "  -" + $scope.currentUser.firstName + " " +$scope.currentUser.lastName);
+					$scope.userTasks[i].changelog.push(change + "  -" + 
+						$scope.currentUser.firstName + " " +$scope.currentUser.lastName + " at " + $scope.today());
 					$scope.userTasks[i].newChange = "";
 				}
 			}
@@ -56,10 +58,45 @@ function TaskController($scope, $http) {
 		});
 	};
 
+	//actually alternates between complete and not complete.  
 	$scope.completeTask = function(task) {
-		$http.post('/completeTask.json',task).success(function(data) {
-			$scope.setTaskAlert("Task complete!", "success");
-		});
+		if($scope.currentUser.userName.valueOf()!=task.initiator) {
+			$scope.setTaskAlert("You don't have permission to mark this as complete.  Have you talked to "
+				 + task.initiator + "?","error");
+			task.complete = !task.complete;
+		}
+		else {
+			$http.post('/completeTask.json',task).success(function(data) {
+				if(data.task.complete == true ) {
+					$scope.setTaskAlert("Task complete!", "success");
+				}
+				else {
+					$scope.setTaskAlert("Task marked not complete!", "warning");
+				}
+				for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
+					if($scope.userTasks[i]._id == data.task._id) { 
+						$scope.userTasks[i].changelog = data.task.changelog;
+						if($scope.userTasks[i].style != null) {
+							$scope.userTasks[i].style = null;
+						}
+						else {
+							$scope.userTasks[i].style = {"text-decoration": "line-through"};
+						}
+					}
+				}
+				for (var i = $scope.projectTasks.length - 1; i >= 0; i--) {
+					if($scope.projectTasks[i]._id == data.task._id) { 
+						$scope.projectTasks[i].changelog = data.task.changelog;
+						if($scope.projectTasks[i].style != null) {
+							$scope.projectTasks[i].style = null;
+						}
+						else {
+							$scope.projectTasks[i].style = {"text-decoration": "line-through"};
+						}
+					}
+				}
+			});
+		}
 	};
 
 	$scope.deleteTask = function(task) {
@@ -69,12 +106,32 @@ function TaskController($scope, $http) {
 									".\nHave you contacted the initiator, " + task.initiator, "error");
 			} 
 			else {
-				for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
-					if($scope.userTasks[i]._id == data.task._id) { //@TODO find existing task to delete properly
-						$scope.userTasks.splice(i,1);
+				if(data.task.initiator.valueOf() == $scope.currentUser.userName.valueOf()) {
+					for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
+						if($scope.userTasks[i]._id == data.task._id) { 
+							$scope.userTasks.splice(i,1);
+						}
+					};
+					for (var i = $scope.projectTasks.length - 1; i >= 0; i--) {
+						if($scope.projectTasks[i]._id == data.task._id) { 
+							$scope.projectTasks.splice(i,1);
+						}
+					};
+					$scope.setTaskAlert(task.name + " deleted.","error");
+				}
+				else {
+					for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
+						if($scope.userTasks[i]._id == data.task._id) { 
+							$scope.userTasks.splice(i,1);
+						}
 					}
-				};
-				$scope.setTaskAlert(task.name + " deleted.","error");
+					for (var i = $scope.projectTasks.length - 1; i >= 0; i--) {
+						if($scope.projectTasks[i]._id == data.task._id) { 
+							$scope.projectTasks[i].supporters = data.task.supporters; //reassigning with new supporters.
+						}
+					}
+					$scope.setTaskAlert(data.task.name + " removed from your workflow.", "error");
+				}
 			}
 		});
 	};
@@ -85,6 +142,7 @@ function TaskController($scope, $http) {
 			for (var i = $scope.userTasks.length - 1; i >= 0; i--) {
 				$scope.userTasks[i].newChange = "";
 				$scope.userTasks[i].collapseChangeLog = true;
+				$scope.userTasks[i].style = ($scope.userTasks[i].complete == true) ? {"text-decoration" : "line-through"} : null;
 			}
 			$scope.activeTask = ((data.userTasks.length>0) ? data.userTasks[0] : null);
 		});
@@ -93,6 +151,7 @@ function TaskController($scope, $http) {
 			for (var i = $scope.projectTasks.length - 1; i >= 0; i--) {
 				$scope.projectTasks[i].newChange = "";
 				$scope.projectTasks[i].collapseChangeLog = true;
+				$scope.projectTasks[i].style = ($scope.projectTasks[i].complete == true) ? {"text-decoration" : "line-through"} : null;
 			};
 			$scope.activeProjectTask = ((data.projectTasks.length>0) ?
 										 data.projecTasks[0] : null);
@@ -105,6 +164,7 @@ function TaskController($scope, $http) {
 		$scope.taskAlert.collapse = false;
 	};
 
+	
 	$scope.$on('viewTasks', function() {
 		$scope.getTasks();
 		$scope.taskAlert.collapse = false;

@@ -28,6 +28,8 @@ function TeamController($scope, $http, $timeout) {
 	$scope.activeTeam = null;
 	$scope.activePublicTeam = {};
 
+	$scope.allowTasks = false;
+
 	$scope.toggleTeams = function() {
 		if($scope.site.loggedIn) {
 			if($scope.site.collapsedTeams == true) {
@@ -44,36 +46,28 @@ function TeamController($scope, $http, $timeout) {
 		}
 	};
 
-	$scope.toggleTeamDetails = function() {
-		if($scope.activeTeam != undefined) {
-			$scope.site.collapseTeamDetails = !$scope.site.collapseTeamDetails;
-		}
-		else {
-			$scope.site.collapseTeamDetails = true;
-		}
-	};
 
 	$scope.setTeamAlert = function(msg,type) {
 		$scope.teamAlert.collapse = false;
 		$scope.teamAlert.message = msg;
 		$scope.teamAlert.type = type;
-		$scope.$timeout(function() {$scope.closeTeamAlert();}, 5000);
 	};
 
 	$scope.closeTeamAlert = function() {
 		$scope.teamAlert.collapse = true;
-	}
+	};
 
 	$scope.toggleProjects = function() {
 		if($scope.activeTeam != undefined) {
 			if($scope.site.collapsedProjects == true) {
 				$scope.site.collapsedProjects = false;
 				$scope.$broadcast('viewProjects');
+				$scope.allowTasks = true;
 			}
 			else {
 				$scope.site.collapsedProjects = true;
 			}
-			$scope.site.collapsedTasks = true;
+			//$scope.site.collapsedTasks = true;
 			//$scope.site.collapsedTeams = true;
 		}
 		else {
@@ -81,14 +75,25 @@ function TeamController($scope, $http, $timeout) {
 		}
 	};
 
-	$scope.teamSwitch = function() {
+	$scope.teamSwitch = function(team) {
+		for (var i = $scope.teams.length - 1; i >= 0; i--) {
+			if(team._id==$scope.teams[i]._id) {
+				team.collapseTeamDetails = ! team.collapseTeamDetails;
+			}
+			else {
+				$scope.teams[i].collapseTeamDetails = true;
+			}
+		};
+		$scope.activeTeam = team;
 		$scope.$broadcast('viewProjects');
+		$scope.allowTasks = true;
 		$scope.site.collapsedProjects = false;
 		$scope.site.collapsedTask = true;
+	    $scope.setTeamAlert("Currently selected: " + $scope.activeTeam.name, "success");
 	};
 
 	$scope.toggleTasks = function() {
-		if($scope.activeProject!= undefined) {
+		if($scope.allowTasks == true) {
 			if($scope.site.collapsedTasks == true) {
 				$scope.$broadcast('viewTasks');
 				$scope.site.collapsedTasks = false;
@@ -97,10 +102,17 @@ function TeamController($scope, $http, $timeout) {
 				$scope.site.collapsedTasks = true;
 			}
 			//$scope.site.collapsedTeams = true;
-			$scope.site.collapsedProjects = true;
+			//$scope.site.collapsedProjects = true;
 		}
 		else {
 			alert("You must select a project.");
+		}
+	};
+
+	$scope.viewTasks = function() {
+		if($scope.allowTasks == true) {
+			$scope.$broadcast('viewTasks');
+			$scope.site.collapsedTasks = false;
 		}
 	};
 
@@ -108,6 +120,7 @@ function TeamController($scope, $http, $timeout) {
 		$http.get('/publicTeams.json').success(function(data) {
 			$scope.publicTeams = data.publicTeams;
 			for (var i = $scope.publicTeams.length - 1; i >= 0; i--) {
+				$scope.publicTeams[i].collapseTeamDetails = true;
 				if($scope.publicTeams[i].open==true) {
 					$scope.publicTeams[i].status = "Public";
 				}
@@ -121,6 +134,7 @@ function TeamController($scope, $http, $timeout) {
 		$http.get('/teams.json').success(function(data) {
 			$scope.teams = data.teams;
 			for (var i = $scope.teams.length - 1; i >= 0; i--) {
+				$scope.teams[i].collapseTeamDetails = true;
 				if($scope.teams[i].open==true) {
 					$scope.teams[i].status = "Public";
 				}
@@ -181,7 +195,7 @@ function TeamController($scope, $http, $timeout) {
 		for(var index = 0; index<teams.length; index++) {
 			if(teams[index].name.valueOf()==teamName.valueOf()) {
 				if(newTeam==null) {
-					teams.splice(index,index); //known bug here.  
+					teams.splice(index,1); //known bug here.  
 				}
 				else {
 					teams[index] = newTeam;
@@ -191,7 +205,6 @@ function TeamController($scope, $http, $timeout) {
 			}
 		}
 	};
-
 
 
 

@@ -38,6 +38,7 @@ function ProjectController($scope,$http) {
 		$http.post('/createProject.json', $scope.nProject).success(function(data) {
 			if(data.project.name.valueOf()==String("null").valueOf()) {
 				$scope.setProjectAlert("Project creation failed.", "error");
+				$scope.nProject = {};
 			}
 			else {
 				data.project.collapse = true;
@@ -55,6 +56,11 @@ function ProjectController($scope,$http) {
 			if(data.project.name.valueOf()!=String("null").valueOf()) {
 				$scope.setProjectAlert("Successfully joined " + data.project.name + "!","success");
 				$scope.userProjects.push(data.project);
+				for (var i = $scope.projects.length - 1; i >= 0; i--) {
+					if($scope.projects[i]._id == data.project._id) {
+						$scope.projects[i].people = data.project.people;
+					}
+				}
 			}
 			else {
 				$scope.setProjectAlert("Could not join this project.  Are you already a part of it?", "error");
@@ -74,13 +80,13 @@ function ProjectController($scope,$http) {
 	$scope.displayProject = function(project) {
 		if(project.collapse == false) {
 			project.collapse = true;
-			
 		}
 		else {
 			$scope.collapseUserProjects();
 			project.collapse = false;
 			$scope.activeProject = project;
 		}
+		$scope.viewTasks();
 	};
 
 
@@ -90,11 +96,23 @@ function ProjectController($scope,$http) {
 	$scope.leaveProject = function(project) {
 		$http.post('/leaveProject.json', project).success(function(data) {
 			$scope.setProjectAlert("You left " + project.name + ".", "error");
+			var id = -1;
+			if(data.project!=null) {
+				id = data.project._id;
+			}
+			else {
+				id = project._id;
+			}
 			for (var i = $scope.userProjects.length - 1; i >= 0; i--) {
-				if($scope.userProjects[i]._id == data.id) {
+				if($scope.userProjects[i]._id == id) {
 					$scope.userProjects.splice(i,1);
 				}
-			};
+			}
+			for (var i = $scope.projects.length - 1; i >= 0; i--) {
+				if($scope.projects[i]._id == id) {
+					$scope.projects[i].people = data.project.people;
+				}
+			}
 		});
 	};
 
