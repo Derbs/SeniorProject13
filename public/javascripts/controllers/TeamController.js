@@ -1,4 +1,4 @@
-function TeamController($scope, $http, dataService) {
+function TeamController($scope, $http, $timeout) {
 	//variables necessary for the Team Controller Scope
 
 	//projects
@@ -19,6 +19,12 @@ function TeamController($scope, $http, dataService) {
 		members : []
 	};
 
+	$scope.teamAlert = {
+		collapse : true,
+		type : "success",
+		message : ""
+	};
+
 	$scope.activeTeam = null;
 	$scope.activePublicTeam = {};
 
@@ -30,8 +36,8 @@ function TeamController($scope, $http, dataService) {
 			else {
 				$scope.site.collapsedTeams = true;
 			}
-			$scope.site.collapsedProjects = true;
-			$scope.site.collapsedTasks = true;
+			//$scope.site.collapsedProjects = true;
+			//$scope.site.collapsedTasks = true;
 		}
 		else {
 			alert("You must log in.");
@@ -47,6 +53,17 @@ function TeamController($scope, $http, dataService) {
 		}
 	};
 
+	$scope.setTeamAlert = function(msg,type) {
+		$scope.teamAlert.collapse = false;
+		$scope.teamAlert.message = msg;
+		$scope.teamAlert.type = type;
+		$scope.$timeout(function() {$scope.closeTeamAlert();}, 5000);
+	};
+
+	$scope.closeTeamAlert = function() {
+		$scope.teamAlert.collapse = true;
+	}
+
 	$scope.toggleProjects = function() {
 		if($scope.activeTeam != undefined) {
 			if($scope.site.collapsedProjects == true) {
@@ -57,15 +74,20 @@ function TeamController($scope, $http, dataService) {
 				$scope.site.collapsedProjects = true;
 			}
 			$scope.site.collapsedTasks = true;
-			$scope.site.collapsedTeams = true;
+			//$scope.site.collapsedTeams = true;
 		}
 		else {
 			alert("You must select a team.");
 		}
 	};
 
+	$scope.teamSwitch = function() {
+		$scope.$broadcast('viewProjects');
+		$scope.site.collapsedProjects = false;
+	};
+
 	$scope.toggleTasks = function() {
-		if($scope.activeProject!= null) {
+		if($scope.activeProject!= undefined) {
 			if($scope.site.collapsedTasks == true) {
 				$scope.$broadcast('viewTasks');
 				$scope.site.collapsedTasks = false;
@@ -73,7 +95,7 @@ function TeamController($scope, $http, dataService) {
 			else {
 				$scope.site.collapsedTasks = true;
 			}
-			$scope.site.collapsedTeams = true;
+			//$scope.site.collapsedTeams = true;
 			$scope.site.collapsedProjects = true;
 		}
 		else {
@@ -90,19 +112,14 @@ function TeamController($scope, $http, dataService) {
 		$http.get('/teams.json').success(function(data) {
 			$scope.teams = data.teams;
 			$scope.activeTeam =  ((data.teams.length>0) ? data.teams[0] : null)
-			/*$scope.callSetTeams(data.teams).then(function() {
-				$scope.callGetPublicTeams().then(function(obj) {
-					$scope.teams = obj;
-				});
-			});*/
 		});
-		$scope.getProjects();
 	};
 
 	$scope.createTeam = function() {
 		$http.post('/createTeam.json', $scope.nTeam).success(function(data) {
 			if(data.team.name.valueOf()==String("null").valueOf()) {
 				$scope.site.message = "That team cannot be created.  Either it already exists, or it's an illegal name.";
+				$scope.setTeamAlert("That team already exists.","error");
 			}
 			else {
 				var teams = $scope.teams;
@@ -113,20 +130,22 @@ function TeamController($scope, $http, dataService) {
 				}
 				$scope.teams = teams;
 				$scope.publicTeams = publicTeams;
-				$scope.site.message = "You just created a team with name " + data.team.name;
+				$scope.setTeamAlert("You have created a new team with name " + data.team.name + ".",
+									"success");
 			}
-			$scope.nTeam.name = "";
+			$scope.nTeam = {};
 		});
 	};
 
 	$scope.joinTeam = function() {
 		$http.post('/joinTeam.json', $scope.activePublicTeam).success(function(data) {
 			if(data.changedTeam.name.valueOf()==String("null").valueOf()) {
-				$scope.site.message = "You can't join that team for some reason."
+				$scope.setTeamAlert("You can't join this team - you're already a member!","warning");
 			}
 			else {
-				$scope.site.message = "You joined " + data.changedTeam.name+".";
 				$scope.teams.push(data.changedTeam);
+				$scope.setTeamAlert("You have joined " + data.changedTeam.name + ".",
+									"success");
 			}
 		});
 	};
@@ -134,8 +153,9 @@ function TeamController($scope, $http, dataService) {
 	$scope.leaveTeam = function() {
 		$http.post('/leaveTeam.json',$scope.activeTeam).success(function(data) {
 			$scope.updateTeam(data.removedTeamName,null);
-			$scope.site.message = "You left " + data.removedTeamName + ".";
 			$scope.activeTeam = $scope.teams[0];
+			$scope.setTeamAlert("You have left " + data.removedTeamName + ".", 
+								"warning");
 		});
 	};
 
@@ -144,9 +164,7 @@ function TeamController($scope, $http, dataService) {
 		for(var index = 0; index<teams.length; index++) {
 			if(teams[index].name.valueOf()==teamName.valueOf()) {
 				if(newTeam==null) {
-					alert("" + teams.length + "\n" + teams[index].name);
-					teams.splice(index,index);
-					alert(teams.length);
+					teams.splice(index,index); //known bug here.  
 				}
 				else {
 					teams[index] = newTeam;
@@ -163,7 +181,8 @@ function TeamController($scope, $http, dataService) {
 	//events!
 	$scope.$on('login', function() {
 		$scope.updateTeams();
-		$scope.$apply();
+		$scope.toggleTeams();
+		//$scope.$apply();
 	});
 	
 }

@@ -24,7 +24,8 @@ exports.updateUserProjects = projectRoutes.updateUserProjects;
 exports.joinProject = projectRoutes.joinProject;
 exports.leaveProject = projectRoutes.leaveProject;
 
-exports.getTasks = taskRoutes.getTasks;
+exports.getPersonalTasks = taskRoutes.getPersonalTasks;
+exports.getProjectTasks = taskRoutes.getProjectTasks;
 exports.addTask = taskRoutes.addTask;
 
 exports.index = function() {

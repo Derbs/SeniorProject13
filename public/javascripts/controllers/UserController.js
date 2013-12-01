@@ -35,7 +35,9 @@ function UserController($scope, $http, dataService) {
 		collapsedProjects : true,
 		collapsedTasks : true,
 		collapseTeamProjectDetails : true,
-		collapseOwnProjectDetails : true
+		collapseOwnProjectDetails : true,
+		collapseAddProject : true,
+		currentSelection : ""
 	};
 
 	$scope.toggleLogin = function() {
@@ -118,6 +120,10 @@ function UserController($scope, $http, dataService) {
 			}
 		});
 	};
+
+	$scope.setCurrentTeam = function(val) {
+		$scope.site.currentTeam = val;
+	}
 }
 
 UserController.$inject = ['$scope','$http','dataService'];

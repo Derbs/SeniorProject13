@@ -7,9 +7,9 @@ block content
       a.brand(href="#") Seeing The Forest
       ul.nav
         li
-          a.disabled(href= "#", ng-click="toggleLogin()") Login
+          a.disabled(href= "", ng-click="toggleLogin()") Login
         li
-          a.disabled(href="#", ng-click="toggleRegister()") Register
+          a.disabled(href="", ng-click="toggleRegister()") Register
         li 
         li.divider-vertical
         li.pull-right
@@ -33,7 +33,6 @@ block content
           button.btn(type="submit") Register
   div(ng-controller = "TeamController", data-ng-init="updateTeams()", ng-cloak)
     div.span5(id="team-viewing-holder")
-      t Current Selection: {{activeTeam.name}} / {{activeUserProject}}
       br
       div.btn-group
         button.btn(ng-click="toggleTeams()") Teams
@@ -42,9 +41,17 @@ block content
       div(collapse="site.collapsedTeams")
         div.well
           tabset
+            tab(heading="New Team")
+              form(novalidate, ng-submit="createTeam()")
+                input.span2(type="text", placeholder = "a cool name", ng-model="nTeam.name")
+                input.span2(type="text",placeholder = "Member #", ng-model="nTeam.memberCap")
+                button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
+                br
+                textarea.span4(placeholder = "a lengthy description", ng-model="nTeam.description")
+                button.btn(type="submit") Create
             tab(heading="Your Teams")
               div
-                select(ng-model="activeTeam", ng-options="team.name for team in teams", ng-change="getProjects()")
+                select(ng-model="activeTeam", ng-options="team.name for team in teams",ng-change="teamSwitch()")
                 button.btn(ng-click="toggleTeamDetails()") Details
                 div(collapse="site.collapseTeamDetails")
                   div.span2
@@ -59,49 +66,48 @@ block content
               div
                 select(ng-model="activePublicTeam", ng-options="publicTeam.name for publicTeam in publicTeams")
                 button.btn(ng-click="joinTeam()") Join
-            tab(heading="New Team")
-              form(novalidate, ng-submit="createTeam()")
-                input.span2(type="text", placeholder = "a cool name", ng-model="nTeam.name")
-                input.span2(type="text",placeholder = "Member #", ng-model="nTeam.memberCap")
-                button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
-                br
-                textarea.span4(placeholder = "a lengthy description", ng-model="nTeam.description")
-                button.btn(type="submit") Create
-      div(ng-controller="ProjectController")
-        div(collapse="site.collapsedProjects")
+          div(collapse="teamAlert.collapse")
+            alert(type="teamAlert.type",close="teamAlert.collapse = true")
+              {{teamAlert.message}}
+    div(ng-controller="ProjectController")
+      h2 {{activeTeam.name}}
+      div(collapse="site.collapsedProjects")
+        div.well
+          tabset
+            tab(heading="Your Projects")
+              ul(class="nav-pills nav-stacked nav", ng-repeat ="project in userProjects")
+                li(ng-click="project.collapse = !project.collapse")
+                  a.disabled(href="") {{project.name}}
+                div(collapse="project.collapse")
+                  p {{project.description}}
+                  button.pull-right(type="button", ng-click="leaveProject(project)") Leave Project
+            tab(heading="Team Projects")
+              ul(class="nav-pills nav-stacked nav", ng-repeat ="project in projects")
+                li(ng-click="project.collapse = !project.collapse")
+                  a.disabled(href="") {{project.name}}
+                div(collapse="project.collapse")
+                  p {{project.description}}
+                  button(type="button",ng-click="joinProject(project)") Join Project
+          button.btn-block(type="button", class="disabled btn-info", ng-click="site.collapseAddProject=!site.collapseAddProject") Add another project
+          br
+          div(collapse="site.collapseAddProject")
+            form(novalidate,ng-submit="addProject()")
+                input(type="text",placeholder="project name", ng-model="nProject.name")
+                textarea(placeholder="just another project description", ng-model="nProject.description")
+                button.btn(type="submit") Create Project
+          div(collapse="projectAlert.collapse")
+            alert(type="projectAlert.type",close="projectAlert.collapse = true")
+              {{projectAlert.message}}
+      div(ng-controller="TaskController")
+        div(collapse="site.collapsedTasks")
           div.well
             tabset
-              tab(heading="Your Projects")
-                select(ng-model="activeUserProject",ng-options="project.name for project in userProjects")
-                button.btn-small(type="button",ng-click="site.collapseOwnProjectDetails=!site.collapseOwnProjectDetails") Details
-                div(collapse="site.collapseOwnProjectDetails")
-                  strong {{activeUserProject.name}}
-                  br
-                  small {{activeUserProject.description}}
-                  br
-                  t Members 
-                  button.btn-small(type="button",ng-click="leaveProject()") Leave Project
-                  small(ng-repeat="person in activeUserProject.people") {{person}}
-              tab(heading="Team Projects")
-                select(ng-model="activeProject",ng-options="project.name for project in projects")
-                button.btn-small(type="button",ng-click="site.collapseTeamProjectDetails=!site.collapseTeamProjectDetails") Details
-                div(collapse="site.collapseTeamProjectDetails")
-                  strong {{activeProject.name}}
-                  br
-                  small {{activeProject.description}}
-                  br
-                  t Members
-                  button.btn-small(type="button",ng-click="joinProject()") Join Project
-                  br
-                  small(ng-repeat="person in activeProject.people") {{person}}
-              tab(heading="New Project")
-                form(novalidate,ng-submit="addProject()")
-                  input(type="text",placeholder="project name", ng-model="nProject.name")
-                  textarea(placeholder="just another project description", ng-model="nProject.description")
-                  button.btn(type="submit") Create Project
-        div(collapse="site.collapsedTasks",ng-controller="TaskController")
-          div.well
-            tabset
+              tab(heading="New Task")
+                form(novalidate,ng-submit="addTask()")
+                  input(type="text",placeholder="Pithy Title", popover = "Short Task Title", popover-trigger="mouseenter",ng-model="nTask.name")
+                  textarea(placeholder="lengthy description",ng-model="nTask.description")
+                  input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
+                  button.btn(type="submit") Submit
               tab(heading="Your Tasks")
                 select(ng-model="activeTask",ng-options="task.name for task in userTasks")
                 button.btn-small(type="button",ng-click="site.collapseTaskDetails = !site.collapseTaskDetails") Details
@@ -113,12 +119,6 @@ block content
                     li {{value}}
               tab(heading="Project Tasks")
                 select(ng-model="activeProjectTask",ng-options="task.name for task in projectTasks")
-              tab(heading="New Task")
-                form(novalidate,ng-submit="addTask()")
-                  input(type="text",placeholder="Pithy Title",ng-model="nTask.name")
-                  textarea(placeholder="lengthy description",ng-model="nTask.description")
-                  input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
-                  button.btn(type="submit") Submit
-                br
-    div.span11
-      canvas(id="canvas")
+            div(collapse="taskAlert.collapse")
+              alert(type="taskAlert.type",close="taskAlert.collapse = true")
+                {{taskAlert.message}}
