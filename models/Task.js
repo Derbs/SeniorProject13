@@ -7,5 +7,6 @@ exports.TaskSchema = new Mongoose.Schema( {
 	initiator : {type : String, required : true},
 	seedMin : {type : Number, default : 0},
 	supporters : [{type : String}],
-	project : {type : String}
+	project : {type : String},
+	complete : {type : boolean, default : false}
 });

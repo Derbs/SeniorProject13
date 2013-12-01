@@ -93,3 +93,57 @@ exports.getProjectTasks = function(Task) {
 		//querying on a few different things.  
 	};
 };
+
+exports.updateTask = function(Task) {
+	return function(req, res) {
+		console.log("Updating Task \"" + req.body.task.name + "\" " + req.body.task.description + "\n\n");
+		console.log("Current changelog: " + req.body.task.changelog + "\n\n");
+		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
+			if(error||!fTask) {
+				console.log("This task doesn't exist");
+				res.json({id:-1});
+			}
+			else {
+				consoel.log("Success!");
+				fTask.changelog.push(changelog);
+				fTask.save();
+				res.json({id:fTask._id});
+			}
+		});
+	};
+};
+
+exports.completeTask = function(Task) {
+	return function(req, res) {
+		console.log("Attempting to mark task " + req.body.task.name + " as complete.\n\n");
+		Task.findOne({_id : req.body.task._id}, function(error,fTask)) {
+			if(error||!fTask) {
+				console.log("This task doesn't exist.");
+				res.json({id:-1});
+			}
+			else {
+				console.log("Success");
+				fTask.complete = true;
+				fTask.save();
+				res.json({id:fTask._id});
+			}
+		};
+	};
+};
+
+exports.deleteTask = function(task) {
+	return function(req, res) {
+		console.log("Attempting to remove task " + req.body.task.name);
+		Task.findOne({_id : req.body.task._id}, function(error,fTask) {
+			if(error||!fTask) {
+				console.log("This task doesn't exist - perhaps it is already removed?");
+				res.json({id:-1});
+			}
+			else {
+				console.log("Success");
+				res.json({id : fTask._id});
+				fTask.remove();
+			}
+		});
+	};
+};

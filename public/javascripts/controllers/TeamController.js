@@ -106,11 +106,27 @@ function TeamController($scope, $http, $timeout) {
 	$scope.updateTeams = function() {
 		$http.get('/publicTeams.json').success(function(data) {
 			$scope.publicTeams = data.publicTeams;
+			for (var i = $scope.publicTeams.length - 1; i >= 0; i--) {
+				if($scope.publicTeams[i].open==true) {
+					$scope.publicTeams[i].status = "Public";
+				}
+				else {
+					$scope.publicTeams[i].status = "Private";
+				}
+			};
 			$scope.activePublicTeam = ((data.publicTeams.length>0)
 									 ? data.publicTeams[0] : null);
 		});
 		$http.get('/teams.json').success(function(data) {
 			$scope.teams = data.teams;
+			for (var i = $scope.teams.length - 1; i >= 0; i--) {
+				if($scope.teams[i].open==true) {
+					$scope.teams[i].status = "Public";
+				}
+				else {
+					$scope.teams[i].status = "Private";
+				}
+			};
 			$scope.activeTeam =  ((data.teams.length>0) ? data.teams[0] : null)
 		});
 	};

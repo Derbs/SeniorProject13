@@ -29,12 +29,35 @@ function TaskController($scope, $http) {
 		});
 	};
 
-	$scope.getTasks = function(project) {
-		$http.post('/getPersonalTasks.json',project).success(function(data) {
+	$scope.updateTask = function(task, change) {
+		var obj = {
+			task : task,
+			change : change
+		};
+		$http.post('/updateTask.json',obj).success(function(data) {
+			userTask[userTasks.indexOf(task)] = data.task;
+			$scope.setTaskAlert("Task Updated!", "neutral");
+		});
+	};
+
+	$scope.completeTask = function(task) {
+		$http.post('/completeTask.json',task).success(function(data) {
+			$scope.setTaskAlert("Task complete!", "success");
+		});
+	};
+
+	$scope.deleteTask = function(task) {
+		$http.post('/deleteTask.json',task).success(function(data) {
+			$scope.setTaskAlert(task.name + " deleted.","error");
+		});
+	};
+
+	$scope.getTasks = function() {
+		$http.post('/getPersonalTasks.json',$scope.activeProject).success(function(data) {
 			$scope.userTasks = data.userTasks;
 			$scope.activeTask = ((data.userTasks.length>0) ? data.userTasks[0] : null);
 		});
-		$http.post('/getProjectTasks.json',project).success(function(data) {
+		$http.post('/getProjectTasks.json',$scope.activeProject).success(function(data) {
 			$scope.projectTasks = data.projectTasks;
 			$scope.activeProjectTask = ((data.projectTasks.length>0) ?
 										 data.projecTasks[0] : null);

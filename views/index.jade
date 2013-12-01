@@ -31,11 +31,11 @@ block content
           input(type="text", placeholder = "first name", ng-model="cUser.firstName")
           input(type="text", placeholder = "last name", ng-model="cUser.lastName")
           button.btn(type="submit") Register
-  div(ng-controller = "TeamController", data-ng-init="updateTeams()", ng-cloak)
-    div.span5(id="team-viewing-holder")
+  div.row-fluid(ng-controller = "TeamController", data-ng-init="updateTeams()", ng-cloak)
+    div.span4(id="team-viewing-holder")
       br
       div.btn-group
-        button.btn(ng-click="toggleTeams()") Teams
+        button.btn(ng-click="toggleTeams()", tooltip-placement="top", tooltip="Start here!") Teams
         button.btn(ng-click="toggleProjects()") Projects
         button.btn(ng-click="toggleTasks()") Tasks
       div(collapse="site.collapsedTeams")
@@ -43,19 +43,19 @@ block content
           tabset
             tab(heading="New Team")
               form(novalidate, ng-submit="createTeam()")
-                input.span2(type="text", placeholder = "a cool name", ng-model="nTeam.name")
+                input.span2(type="text", placeholder = "A Cool Name", ng-model="nTeam.name")
                 input.span2(type="text",placeholder = "Member #", ng-model="nTeam.memberCap")
                 button.btn(type="button", btn-checkbox, ng-model="nTeam.open") Visible
                 br
-                textarea.span4(placeholder = "a lengthy description", ng-model="nTeam.description")
-                button.btn(type="submit") Create
+                textarea.span4(placeholder = "A Lengthy Description", ng-model="nTeam.description")
+                button.btn(type="submit", tooltip-placement="right", tooltip="Create a team called '{{nTeam.name}}'") Create
             tab(heading="Your Teams")
               div
                 select(ng-model="activeTeam", ng-options="team.name for team in teams",ng-change="teamSwitch()")
                 button.btn(ng-click="toggleTeamDetails()") Details
-                div(collapse="site.collapseTeamDetails")
+                div.row-fluid(collapse="site.collapseTeamDetails")
                   div.span2
-                    label(class="success",ng-model="activeTeam.open") Open
+                    label(class="success",ng-model="activeTeam.open") {{activeTeam.status}}
                   div.span2 Members:
                     ul(ng-repeat="person in activeTeam.members") 
                       li {{person}}
@@ -69,21 +69,21 @@ block content
           div(collapse="teamAlert.collapse")
             alert(type="teamAlert.type",close="teamAlert.collapse = true")
               {{teamAlert.message}}
-    div(ng-controller="ProjectController")
-      h2 {{activeTeam.name}}
+    div.span8(ng-controller="ProjectController")
+      h2 {{activeTeam.name}} - {{activeProject.name}}
       div(collapse="site.collapsedProjects")
         div.well
           tabset
             tab(heading="Your Projects")
               ul(class="nav-pills nav-stacked nav", ng-repeat ="project in userProjects")
-                li(ng-click="project.collapse = !project.collapse")
+                li(ng-click="displayProject(project)")
                   a.disabled(href="") {{project.name}}
                 div(collapse="project.collapse")
                   p {{project.description}}
                   button.pull-right(type="button", ng-click="leaveProject(project)") Leave Project
             tab(heading="Team Projects")
               ul(class="nav-pills nav-stacked nav", ng-repeat ="project in projects")
-                li(ng-click="project.collapse = !project.collapse")
+                li(ng-click="displayProject(project)")
                   a.disabled(href="") {{project.name}}
                 div(collapse="project.collapse")
                   p {{project.description}}
@@ -105,7 +105,7 @@ block content
               tab(heading="New Task")
                 form(novalidate,ng-submit="addTask()")
                   input(type="text",placeholder="Pithy Title", popover = "Short Task Title", popover-trigger="mouseenter",ng-model="nTask.name")
-                  textarea(placeholder="lengthy description",ng-model="nTask.description")
+                  textarea(placeholder="Lengthy Description",ng-model="nTask.description")
                   input(type="text",placeholder="Minimum Seeders",ng-model="nTask.seedMin")
                   button.btn(type="submit") Submit
               tab(heading="Your Tasks")

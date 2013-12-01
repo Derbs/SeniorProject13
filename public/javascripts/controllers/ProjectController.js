@@ -28,6 +28,7 @@ function ProjectController($scope,$http) {
 				$scope.userProjects[i].collapse = true;
 			}
 		});
+		$scope.$apply();
 	};
 
 	$scope.addProject = function() {
@@ -61,15 +62,45 @@ function ProjectController($scope,$http) {
 		});
 	};
 
+	$scope.collapseUserProjects = function() {
+		for (var i = $scope.userProjects.length - 1; i >= 0; i--) {
+			$scope.userProjects[i].collapse = true;
+		}
+		for (var i = $scope.projects.length - 1; i >= 0; i--) {
+			$scope.projects[i].collapse = true;
+		}
+	};
+
+	$scope.displayProject = function(project) {
+		if(project.collapse == false) {
+			project.collapse = true;
+			
+		}
+		else {
+			$scope.collapseUserProjects();
+			project.collapse = false;
+			$scope.activeProject = project;
+		}
+	};
+
 
 	//@TODO make it so leaving projects updates the Your Project list.
 	//      NOTE: This is probably a scope issue...
+	//@TODO - fix this.  Its one of only a few errors left.
 	$scope.leaveProject = function(project) {
 		$http.post('/leaveProject.json', project).success(function(data) {
-			if(data.project.name.valueOf()!=String("null").valueOf()) {
-				$scope.getProjects();
-				$scope.setProjectAlert("You left " + data.project.name + ".", "error");
-			}
+			$scope.setProjectAlert("You left " + project.name + ".", "error");
+			for (var i = $scope.userProjects.length - 1; i >= 0; i--) {
+				if($scope.userProjects[i]._id == data.id) {
+					$scope.userProjects.splice(i,1);
+				}
+			};
+		});
+	};
+
+	$scope.completeProject = function(project) {
+		$http.post('/completeProject.json', project).success(function() {
+			$scope.setProjectAlert("As leader, you have closed this project.","error");
 		});
 	};
 
@@ -80,7 +111,7 @@ function ProjectController($scope,$http) {
 		for(var index=0; index<$scope.userProjects.length; index++) {
 			if($scope.userProjects[index].name.valueOf() == oldVal.valueOf()) {
 				if(newVal==null) {
-					$scope.userProjects.splice(index,index+1);
+					$scope.userProjects.splice(index,1);
 				}
 				else {
 					$scope.userProjects[index] = newVal;

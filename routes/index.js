@@ -27,6 +27,9 @@ exports.leaveProject = projectRoutes.leaveProject;
 exports.getPersonalTasks = taskRoutes.getPersonalTasks;
 exports.getProjectTasks = taskRoutes.getProjectTasks;
 exports.addTask = taskRoutes.addTask;
+exports.updateTask = taskRoutes.updateTask;
+exports.completeTask = taskRoutes.completeTask;
+exports.deleteTask = taskRoutes.deleteTask;
 
 exports.index = function() {
 	return function(req, res) {

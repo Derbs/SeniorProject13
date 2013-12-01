@@ -26,25 +26,6 @@ exports.createProject = function(Team,Project) {
 					console.log("\n\nProject cannot be created.")
 				}
 		});
-		/*if(project.name.valueOf() != String("null").valueOf()) {
-			Team.findOne({name:project.team},function(error,fTeam) {
-				if(error||!fTeam) {
-					console.log("Something went wrong when finding a team " + project.team + 
-						"for project with name " + project.name +"...");
-				}
-				else {
-					console.log("Now we're updating the team.\n\n");
-					fTeam.projects.addToSet(project.name);
-					console.log(JSON.stringify(fTeam.projects));
-					console.log(JSON.stringify(fTeam));
-					fTeam.save();
-					res.json({changedTeam:fTeam});
-				}
-			});
-		}
-		else {
-			console.log("No need to update the team.");
-		}*/
 	};
 };
 
@@ -120,13 +101,14 @@ exports.leaveProject = function(Project) {
 		Project.findOne({name:projectName},function(error,fProject) {
 			if(error||!fProject) {
 				console.log("Can't seem to find this project.");
+				res.json({id:-1});
 			}
 			else if(fProject.people.indexOf(quittingMember)==-1) {
 				console.log(quittingMember + " is not a member of this project, and so they don't need to quit...");
+				res.json({id:-1});
 			}
 			else {
-				fProject.people.splice(fProject.people.indexOf(quittingMember),
-									   fProject.people.indexOf(quittingMember)+1);
+				fProject.people.splice(fProject.people.indexOf(quittingMember), 1);
 				fProject.save();
 				console.log("Successfully removed " + quittingMember + " from " + projectName + ".\n\n" +
 							"The members left are " + fProject.people);
@@ -137,6 +119,7 @@ exports.leaveProject = function(Project) {
 				else {
 					console.log("There is one less member in the project.");
 				}
+				res.json({id : fProject._id});
 			}
 		});
 	};
